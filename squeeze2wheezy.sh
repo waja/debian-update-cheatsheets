@@ -1,8 +1,8 @@
 Please also refer to http://www.debian.org/releases/wheezy/releasenotes and use your brain!
-For Roundcube and Sqlite Backend see: http://wiki.debian.org/Roundcube/Dep...tionOfSQLitev2
+For Roundcube and Sqlite Backend see: http://wiki.debian.org/Roundcube/DeprecationOfSQLitev2
 
 
-# upgrade to UTF-8 locales (http://www.debian.org/releases/testi...ml#switch-utf8)
+# upgrade to UTF-8 locales (http://www.debian.org/releases/testing/i386/release-notes/ap-old-stuff.en.html#switch-utf8)
 dpkg-reconfigure locales
 
 # remove unused config file
@@ -19,11 +19,10 @@ sed -i /lenny/d /etc/apt/sources.list*
 sed -i s#/backports.org/debian#/ftp.de.debian.org/debian#g /etc/apt/sources.list*
 sed -i s/debian-backports/debian/g /etc/apt/sources.list*
 if [ "$( dpkg -l | grep "^ii.*php5-suhosin" | wc -l)" -ge "1" ]; then \
-  wget http://ftp.cyconet.org/debian/source...s-cyconet.list \
+  wget http://ftp.cyconet.org/debian/sources.list.d/wheezy-updates-cyconet.list \
   -O /etc/apt/sources.list.d/wheezy-updates-cyconet.list
 fi
 aptitude update
- 
 
 # check package status
 dpkg --audit
@@ -37,7 +36,7 @@ aptitude unmarkauto $(dpkg-query -W 'linux-image-2.6.*' | cut -f1)
 # have a look into required and free disk space
 apt-get -o APT::Get::Trivial-Only=true dist-upgrade || df -h
 
-# check if we have PAE available (http://www.debian.org/releases/testi...html#idp573136)
+# check if we have PAE available (http://www.debian.org/releases/testing/i386/release-notes/ch-upgrading.en.html#idp573136)
 grep -q '^flags.*\bpae\b' /proc/cpuinfo && echo "We support PAE: yes" || echo "We support PAE: no (please install linux-image-486 and remove linux-image-.*-686)"
 
 # record session
