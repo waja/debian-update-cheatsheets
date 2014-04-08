@@ -79,9 +79,11 @@ sed -i s/^startup=0/startup=1/ /etc/default/shorewall
 aptitude dist-upgrade
 
 # migrate expose.ini
-[ -f /etc/php5/conf.d/expose.ini ] && mv /etc/php5/conf.d/expose.ini /etc/php5/mods-available/local-expose.ini && php5enmod local-expose/90
+[ -f /etc/php5/conf.d/expose.ini ] && mv /etc/php5/conf.d/expose.ini \
+ /etc/php5/mods-available/local-expose.ini && php5enmod local-expose/90
 # migrate local suhosin config
-find /etc/php5/conf.d/ -type f -name "*suhosin.ini" -exec mv '{}' /etc/php5/mods-available/local-suhosin.ini \; && php5enmod local-suhosin/90
+find /etc/php5/conf.d/ -type f -name "*suhosin.ini" -exec mv '{}' \
+ /etc/php5/mods-available/local-suhosin.ini \; && php5enmod local-suhosin/90
 
 # mysql
 
