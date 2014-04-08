@@ -37,7 +37,8 @@ aptitude unmarkauto $(dpkg-query -W 'linux-image-2.6.*' | cut -f1)
 apt-get -o APT::Get::Trivial-Only=true dist-upgrade || df -h
 
 # check if we have PAE available (http://www.debian.org/releases/testing/i386/release-notes/ch-upgrading.en.html#idp573136)
-grep -q '^flags.*\bpae\b' /proc/cpuinfo && echo "We support PAE: yes" || echo "We support PAE: no (please install linux-image-486 and remove linux-image-.*-686)"
+grep -q '^flags.*\bpae\b' /proc/cpuinfo && echo "We support PAE: yes" \
+|| echo "We support PAE: no (please install linux-image-486 and remove linux-image-.*-686)"
 
 # record session
 script -t 2>~/upgrade-wheezy.time -a ~/upgrade-wheezy.script
