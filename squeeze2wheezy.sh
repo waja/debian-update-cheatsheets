@@ -65,11 +65,17 @@ sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][
 # remove anonymous mysql access
 mysql -u root -p -e "DELETE FROM mysql.user WHERE User=''; DELETE FROM mysql.db WHERE Db='test' AND Host='%' OR Db='test\\_%' AND Host='%'; FLUSH PRIVILEGES;"
 
+# dont use iptables when creating xen vifs
+cp /etc/xen/scripts/vif-bridge /etc/xen/scripts/vif-bridge-local
+sed -i "s/^    handle_iptable/    true/g" /etc/xen/scripts/vif-bridge-local
+sed -i "s/^(vif-script vif-bridge)/(vif-script vif-bridge-local)/" /etc/xen/xend-config.sxp
+
 # xen
 /bin/sed -i -e 's/^[# ]*\((dom0-min-mem\).*\().*\)$/\1 512\2/' /etc/xen/xend-config.sxp
 sed -i s/XENDOMAINS_RESTORE=true/XENDOMAINS_RESTORE=false/ /etc/default/xendomains
 sed -i s#XENDOMAINS_SAVE=/var/lib/xen/save#XENDOMAINS_SAVE=\"\"# /etc/default/xendomains
-mv /etc/grub.d/20_linux_xen /etc/grub.d/09_linux_xen
+dpkg-divert --divert /etc/grub.d/09_linux_xen --rename /etc/grub.d/20_linux_xen
+#mv /etc/grub.d/20_linux_xen /etc/grub.d/09_linux_xen
 echo 'GRUB_CMDLINE_XEN="dom0_mem=512M"' >> /etc/default/grub
 
 # maybe we want to change some shorewall config stuff again
