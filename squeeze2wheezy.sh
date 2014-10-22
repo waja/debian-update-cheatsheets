@@ -8,7 +8,7 @@ dpkg-reconfigure locales
 # remove unused config file
 rm -rf /etc/network/options /etc/environment
  
-# change distro (please move 3rd party sources to /etc/apt/sources.list.d/)
+# change distro (please move 3rd party sources to /etc/apt/sources.list.d/), maybe look into http://ftp.cyconet.org/debian/sources.list.d/
 sed -i s/squeeze/wheezy/g /etc/apt/sources.list*
 sed -i "s/ stable/ wheezy/g" /etc/apt/sources.list*
 sed -i s/squeeze/wheezy/g /etc/apt/preferences*
