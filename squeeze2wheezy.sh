@@ -95,11 +95,12 @@ find /etc/php5/conf.d/ -type f -name "*suhosin.ini" -exec mv '{}' \
 
 # vsftpd and chroot_local_user?
 if [ "$(grep -i  ^chroot_local_user=yes /etc/vsftpd.conf | wc -l)" -ge "1" ]; then \
-  echo "deb http://ftp.cyconet.org/debian wheezy-updates main non-free contrib" >> \
- /etc/apt/sources.list.d/wheezy-updates-cyconet.list; \
   aptitude update; aptitude install -t wheezy-updates vsftpd && \
   echo "allow_writeable_chroot=YES" >> /etc/vsftpd.conf && /etc/init.d/vsftpd restart; \
 fi
+
+# install fixed quotatool
+dpkg -l | grep quotatool && aptitude update; aptitude safe-upgrade -t wheezy-updates quotatool
 
 # remove old squeeze packages left around (keep eyes open!)
 apt-get autoremove
