@@ -22,6 +22,12 @@ if [ "$( dpkg -l | grep "^ii.*php5-suhosin" | wc -l)" -ge "1" ]; then \
   wget http://ftp.cyconet.org/debian/sources.list.d/wheezy-updates-cyconet.list \
   -O /etc/apt/sources.list.d/wheezy-updates-cyconet.list
 fi
+cat >> /etc/apt/preferences <<EOF
+Package: *
+Pin: release a=squeeze-lts
+Pin-Priority: 200
+
+EOF
 aptitude update
 
 # check package status
