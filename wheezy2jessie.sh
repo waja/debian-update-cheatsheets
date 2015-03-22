@@ -31,7 +31,7 @@ dpkg --get-selections | grep hold
  
 # unmark packages auto
 aptitude unmarkauto vim
-aptitude unmarkauto $(dpkg-query -W 'linux-image-2.6.*' | cut -f1)
+aptitude unmarkauto $(dpkg-query -W 'linux-image-3.2.*' | cut -f1)
  
 # have a look into required and free disk space
 apt-get -o APT::Get::Trivial-Only=true dist-upgrade || df -h
