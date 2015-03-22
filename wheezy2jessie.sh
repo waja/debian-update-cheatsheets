@@ -51,8 +51,8 @@ libc6 libraries/restart-without-asking boolean true
 EOF
 /usr/bin/debconf-set-selections /tmp/jessie.preseed
 
-# minimal system upgrade
-aptitude upgrade
+# minimal system upgrade (keep sysvinit)
+aptitude upgrade '~U sysvinit-core+'
 
 # randomize crontab
 sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' /etc/crontab
@@ -80,8 +80,8 @@ sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][
 # maybe we want to change some shorewall config stuff again
 sed -i s/^startup=0/startup=1/ /etc/default/shorewall
 
-# dist-upgrade
-aptitude dist-upgrade
+# full-upgrade
+aptitude full-upgrade
 
 # migrate expose.ini
 #[ -f /etc/php5/conf.d/expose.ini ] && mv /etc/php5/conf.d/expose.ini \
