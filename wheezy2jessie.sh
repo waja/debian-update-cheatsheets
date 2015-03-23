@@ -51,7 +51,7 @@ libc6 libraries/restart-without-asking boolean true
 EOF
 /usr/bin/debconf-set-selections /tmp/jessie.preseed
 
-# minimal system upgrade (keep sysvinit)
+# minimal system upgrade (keep sysvinit / see http://noone.org/talks/debian-ohne-systemd/debian-ohne-systemd-clt.html#%2811%29)
 aptitude upgrade '~U sysvinit-core+'
 
 # randomize crontab
