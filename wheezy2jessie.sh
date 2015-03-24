@@ -7,21 +7,19 @@ dpkg-reconfigure locales
 # remove unused config file
 rm -rf /etc/network/options /etc/environment
  
+# Transition and remove entries from older releases
+sed -i s#/backports.org/debian#/ftp.de.debian.org/debian#g /etc/apt/sources.list*
+sed -i s/debian-backports/debian/g /etc/apt/sources.list*
+sed -i /etch/d /etc/apt/sources.list*
+sed -i /lenny/d /etc/apt/sources.list*
+sed -i /sarge/d /etc/apt/sources.list*
+sed -i /squeeze/d /etc/apt/sources.list*
+sed -i /volatile/d /etc/apt/sources.list*
+sed -i /proposed-updates/d /etc/apt/sources.list*
 # change distro (please move 3rd party sources to /etc/apt/sources.list.d/), maybe look into http://ftp.cyconet.org/debian/sources.list.d/
 sed -i s/wheezy/jessie/g /etc/apt/sources.list*
 sed -i "s/ stable/ jessie/g" /etc/apt/sources.list*
 sed -i s/wheezy/jessie/g /etc/apt/preferences*
-sed -i /proposed-updates/d /etc/apt/sources.list*
-sed -i /volatile/d /etc/apt/sources.list*
-sed -i /etch/d /etc/apt/sources.list*
-sed -i /lenny/d /etc/apt/sources.list*
-sed -i /sarge/d /etc/apt/sources.list*
-sed -i s#/backports.org/debian#/ftp.de.debian.org/debian#g /etc/apt/sources.list*
-sed -i s/debian-backports/debian/g /etc/apt/sources.list*
-#if [ "$( dpkg -l | grep "^ii.*php5-suhosin" | wc -l)" -ge "1" ]; then \
-#  wget http://ftp.cyconet.org/debian/sources.list.d/wheezy-updates-cyconet.list \
-#  -O /etc/apt/sources.list.d/wheezy-updates-cyconet.list
-#fi
 aptitude update
 
 # check package status
