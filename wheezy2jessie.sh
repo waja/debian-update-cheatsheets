@@ -20,6 +20,8 @@ sed -i /proposed-updates/d /etc/apt/sources.list*
 sed -i s/wheezy/jessie/g /etc/apt/sources.list*
 sed -i "s/ stable/ jessie/g" /etc/apt/sources.list*
 sed -i s/wheezy/jessie/g /etc/apt/preferences*
+sed -i s/wheezy/jessie/g /etc/apt/sources.list.d/*wheezy*
+rename s/wheezy/jessie/g /etc/apt/sources.list.d/*wheezy*
 aptitude update
 
 # check package status
