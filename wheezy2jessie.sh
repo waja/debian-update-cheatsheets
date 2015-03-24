@@ -52,7 +52,7 @@ EOF
 /usr/bin/debconf-set-selections /tmp/jessie.preseed
 
 # minimal system upgrade (keep sysvinit / see http://noone.org/talks/debian-ohne-systemd/debian-ohne-systemd-clt.html#%2811%29)
-aptitude upgrade '~U sysvinit-core+'
+aptitude upgrade '~U' 'sysvinit-core+'
 
 # randomize crontab
 sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' /etc/crontab
