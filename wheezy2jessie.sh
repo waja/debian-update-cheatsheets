@@ -57,6 +57,13 @@ aptitude upgrade '~U' 'sysvinit-core+'
 # (re)enable wheel
 sed -i "s/# auth       required   pam_wheel.so/auth       required   pam_wheel.so/" /etc/pam.d/su
 
+# (re)configure snmpd
+sed -i "s^#rocommunity secret  10.0.0.0/16^rocommunity mycommunity^g" /etc/snmp/snmpd.conf
+sed -i s/#agentAddress/agentAddress/ /etc/snmp/snmpd.conf
+sed -i "s/^ rocommunity public/# rocommunity public/" /etc/snmp/snmpd.conf
+sed -i "s/^ rocommunity6 public/# rocommunity6 public/" /etc/snmp/snmpd.conf
+sed -i "s/agentAddress  udp:127/#agentAddress  udp:127/" /etc/snmp/snmpd.conf
+
 # randomize crontab
 sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' /etc/crontab
 sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' /etc/crontab
