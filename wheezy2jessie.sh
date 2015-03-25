@@ -51,6 +51,9 @@ libc6 libraries/restart-without-asking boolean true
 EOF
 /usr/bin/debconf-set-selections /tmp/jessie.preseed
 
+# update aptitude first
+[ "$(which aptitude)" = "/usr/bin/aptitude" ] && aptitude install aptitude
+
 # minimal system upgrade (keep sysvinit / see http://noone.org/talks/debian-ohne-systemd/debian-ohne-systemd-clt.html#%2811%29)
 aptitude upgrade '~U' 'sysvinit-core+'
 
