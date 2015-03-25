@@ -58,22 +58,28 @@ EOF
 aptitude upgrade '~U' 'sysvinit-core+'
 
 # (re)enable wheel
-sed -i "s/# auth       required   pam_wheel.so/auth       required   pam_wheel.so/" /etc/pam.d/su
+if [ -f /etc/pam.d/su.dpkg-new ]; then CFG=/etc/pam.d/su.dpkg-new; else CFG=/etc/pam.d/su; fi
+sed -i "s/# auth       required   pam_wheel.so/auth       required   pam_wheel.so/" $CFG
 
 # (re)configure snmpd
-sed -i "s^#rocommunity secret  10.0.0.0/16^rocommunity mycommunity^g" /etc/snmp/snmpd.conf
-sed -i s/#agentAddress/agentAddress/ /etc/snmp/snmpd.conf
-sed -i "s/^ rocommunity public/# rocommunity public/" /etc/snmp/snmpd.conf
-sed -i "s/^ rocommunity6 public/# rocommunity6 public/" /etc/snmp/snmpd.conf
-sed -i "s/agentAddress  udp:127/#agentAddress  udp:127/" /etc/snmp/snmpd.conf
+if [ -f /etc/snmp/snmpd.conf.dpkg-new ]; then CFG=/etc/snmp/snmpd.conf.dpkg-new; \
+   else CFG=/etc/snmp/snmpd.conf; fi
+sed -i "s^#rocommunity secret  10.0.0.0/16^rocommunity mycommunity^g" $CFG
+sed -i s/#agentAddress/agentAddress/ $CFG
+sed -i "s/^ rocommunity public/# rocommunity public/" $CFG
+sed -i "s/^ rocommunity6 public/# rocommunity6 public/" $CFG
+sed -i "s/agentAddress  udp:127/#agentAddress  udp:127/" $CFG
 
 # randomize crontab
-sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' /etc/crontab
-sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' /etc/crontab
+if [ -f /etc/crontab.dpkg-new ]; then CFG=/etc/crontab.dpkg-new; else CFG=/etc/crontab; fi
+sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' $CFG
+sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' $CFG
 
 # phpmyadmin
-sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" /etc/phpmyadmin/config.inc.php
-sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" /etc/phpmyadmin/config.inc.php
+if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
+   else CFG=/etc/phpmyadmin/config.inc.php; fi
+sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
+sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" $CFG
 
 # remove anonymous mysql access
 #mysql -u root -p -e "DELETE FROM mysql.user WHERE User=''; DELETE FROM mysql.db WHERE Db='test' AND Host='%' OR Db='test\\_%' AND Host='%'; FLUSH PRIVILEGES;"
