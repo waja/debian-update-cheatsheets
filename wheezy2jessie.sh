@@ -109,6 +109,11 @@ aptitude full-upgrade
 #find /etc/php5/conf.d/ -type f -name "*suhosin.ini" -exec mv '{}' \
 # /etc/php5/mods-available/local-suhosin.ini \; && php5enmod local-suhosin/90
 
+# Apache2 config migration
+# can be done via https://gist.github.com/waja/9c6ca010bf44b7a6f99c/raw/migrate_apache22to24.sh
+# or sites transition with /usr/share/doc/apache2/migrate-sites.pl
+# More info in /usr/share/doc/apache2/NEWS.Debian.gz
+
 # mysql
 
 # vsftpd and chroot_local_user?
