@@ -36,10 +36,6 @@ aptitude unmarkauto $(dpkg-query -W 'linux-image-3.2.*' | cut -f1)
 # have a look into required and free disk space
 apt-get -o APT::Get::Trivial-Only=true dist-upgrade || df -h
 
-# check if we have PAE available (http://www.debian.org/releases/testing/i386/release-notes/ch-upgrading.en.html#idp573136)
-#grep -q '^flags.*\bpae\b' /proc/cpuinfo && echo "We support PAE: yes" \
-#|| echo "We support PAE: no (please install linux-image-486 and remove linux-image-.*-686)"
-
 # record session
 script -t 2>~/upgrade-jessie.time -a ~/upgrade-jessie.script
 
@@ -115,14 +111,6 @@ aptitude full-upgrade
 # More info in /usr/share/doc/apache2/NEWS.Debian.gz
 
 # mysql
-
-# vsftpd and chroot_local_user?
-#if [ "$(grep -i  ^chroot_local_user=yes /etc/vsftpd.conf | wc -l)" -ge "1" ]; then \
-#  echo "deb http://ftp.cyconet.org/debian wheezy-updates main non-free contrib" >> \
-# /etc/apt/sources.list.d/wheezy-updates-cyconet.list; \
-#  aptitude update; aptitude install -t wheezy-updates vsftpd && \
-#  echo "allow_writeable_chroot=YES" >> /etc/vsftpd.conf && /etc/init.d/vsftpd restart; \
-#fi
 
 # remove old squeeze packages left around (keep eyes open!)
 apt-get autoremove
