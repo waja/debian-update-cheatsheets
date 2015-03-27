@@ -77,6 +77,29 @@ if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/conf
 sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
 sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" $CFG
 
+# maybe we want to change some shorewall config stuff again
+sed -i s/^startup=0/startup=1/ /etc/default/shorewall
+
+# full-upgrade
+aptitude full-upgrade
+
+# Apache2 config migration
+# can be done via https://gist.github.com/waja/9c6ca010bf44b7a6f99c/raw/migrate_apache22to24.sh
+# or sites transition with /usr/share/doc/apache2/migrate-sites.pl
+# More info in /usr/share/doc/apache2/NEWS.Debian.gz
+
+# remove old squeeze packages left around (keep eyes open!)
+apt-get autoremove
+aptitude search ?obsolete
+dpkg -l | grep etch | grep -v xen | grep -v unbound | grep -v finch | awk '{print $2}' | xargs aptitude -y purge
+dpkg -l | grep lenny | grep -v xen | awk '{print $2}' | xargs aptitude -y purge
+dpkg -l | grep squeeze | grep -v xen | awk '{print $2}' | xargs aptitude -y purge
+dpkg -l | grep wheezy | grep -v xen | grep -v linux-image | awk '{print $2}' | xargs aptitude -y purge
+aptitude -y install deborphan && deborphan | grep -v xen | grep -v libpam-cracklib | xargs aptitude -y purge
+dpkg -l | grep ^r | awk '{print $2}' | xargs aptitude -y purge
+
+### not needed until now
+# mysql
 # remove anonymous mysql access
 #mysql -u root -p -e "DELETE FROM mysql.user WHERE User=''; DELETE FROM mysql.db WHERE Db='test' AND Host='%' OR Db='test\\_%' AND Host='%'; FLUSH PRIVILEGES;"
 
@@ -92,32 +115,9 @@ sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][
 #dpkg-divert --divert /etc/grub.d/09_linux_xen --rename /etc/grub.d/20_linux_xen
 #echo 'GRUB_CMDLINE_XEN="dom0_mem=512M"' >> /etc/default/grub
 
-# maybe we want to change some shorewall config stuff again
-sed -i s/^startup=0/startup=1/ /etc/default/shorewall
-
-# full-upgrade
-aptitude full-upgrade
-
 # migrate expose.ini
 #[ -f /etc/php5/conf.d/expose.ini ] && mv /etc/php5/conf.d/expose.ini \
 # /etc/php5/mods-available/local-expose.ini && php5enmod local-expose/90
 # migrate local suhosin config
 #find /etc/php5/conf.d/ -type f -name "*suhosin.ini" -exec mv '{}' \
 # /etc/php5/mods-available/local-suhosin.ini \; && php5enmod local-suhosin/90
-
-# Apache2 config migration
-# can be done via https://gist.github.com/waja/9c6ca010bf44b7a6f99c/raw/migrate_apache22to24.sh
-# or sites transition with /usr/share/doc/apache2/migrate-sites.pl
-# More info in /usr/share/doc/apache2/NEWS.Debian.gz
-
-# mysql
-
-# remove old squeeze packages left around (keep eyes open!)
-apt-get autoremove
-aptitude search ?obsolete
-dpkg -l | grep etch | grep -v xen | grep -v unbound | grep -v finch | awk '{print $2}' | xargs aptitude -y purge
-dpkg -l | grep lenny | grep -v xen | awk '{print $2}' | xargs aptitude -y purge
-dpkg -l | grep squeeze | grep -v xen | awk '{print $2}' | xargs aptitude -y purge
-dpkg -l | grep wheezy | grep -v xen | grep -v linux-image | awk '{print $2}' | xargs aptitude -y purge
-aptitude -y install deborphan && deborphan | grep -v xen | grep -v libpam-cracklib | xargs aptitude -y purge
-dpkg -l | grep ^r | awk '{print $2}' | xargs aptitude -y purge
