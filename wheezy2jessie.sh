@@ -86,7 +86,12 @@ aptitude full-upgrade
 # Apache2 config migration
 # can be done via https://gist.github.com/waja/9c6ca010bf44b7a6f99c/raw/migrate_apache22to24.sh
 # or sites transition with /usr/share/doc/apache2/migrate-sites.pl
+#
 # More info in /usr/share/doc/apache2/NEWS.Debian.gz
+# Upstream authorization changes: http://httpd.apache.org/docs/2.4/upgrading.html#run-time
+# https://www.digitalocean.com/community/tutorials/migrating-your-apache-configuration-from-2-2-to-2-4-syntax
+# https://www.linode.com/docs/security/upgrading/updating-virtual-host-settings-from-apache-2-2-to-apache-2-4
+# http://linoxide.com/linux-how-to/apache-migration-2-2-to-2-4-ubuntu-14-04/
 
 # remove old squeeze packages left around (keep eyes open!)
 apt-get autoremove
