@@ -88,7 +88,8 @@ dpkg-divert --divert /etc/grub.d/09_linux_xen --rename /etc/grub.d/20_linux_xen
 echo 'GRUB_CMDLINE_XEN="dom0_mem=512M"' >> /etc/default/grub
 
 # chrony update
-sed -i s/debian.pool/de.pool/g /etc/chrony/chrony.conf && /etc/init.d/chrony restart
+if [ -f /etc/chrony/chrony.conf.new ]; then CFG=/etc/chrony/chrony.conf.new; else CFG=/etc/chrony/chrony.conf; fi
+sed -i s/debian.pool/de.pool/g $CFG
 
 # maybe we want to change some shorewall config stuff again
 sed -i s/^startup=0/startup=1/ /etc/default/shorewall
