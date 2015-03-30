@@ -61,12 +61,15 @@ EOF
 aptitude upgrade
 
 # randomize crontab
-sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' /etc/crontab
-sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' /etc/crontab
+if [ -f /etc/crontab.dpkg-new ]; then CFG=/etc/crontab.dpkg-new; else CFG=/etc/crontab; fi
+sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' $CFG
+sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' $CFG
 
 # phpmyadmin
-sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" /etc/phpmyadmin/config.inc.php
-sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" /etc/phpmyadmin/config.inc.php
+if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
+   else CFG=/etc/phpmyadmin/config.inc.php; fi
+sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
+sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" $CFG
 
 # remove anonymous mysql access
 mysql -u root -p -e "DELETE FROM mysql.user WHERE User=''; DELETE FROM mysql.db WHERE Db='test' AND Host='%' OR Db='test\\_%' AND Host='%'; FLUSH PRIVILEGES;"
