@@ -92,6 +92,9 @@ aptitude full-upgrade
 # https://www.digitalocean.com/community/tutorials/migrating-your-apache-configuration-from-2-2-to-2-4-syntax
 # https://www.linode.com/docs/security/upgrading/updating-virtual-host-settings-from-apache-2-2-to-apache-2-4
 # http://linoxide.com/linux-how-to/apache-migration-2-2-to-2-4-ubuntu-14-04/
+#
+# migrate sites into new naming scheme
+perl /usr/share/doc/apache2/migrate-sites.pl
 
 # remove old squeeze packages left around (keep eyes open!)
 apt-get autoremove
