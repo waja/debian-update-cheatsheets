@@ -93,6 +93,9 @@ aptitude full-upgrade
 # https://www.linode.com/docs/security/upgrading/updating-virtual-host-settings-from-apache-2-2-to-apache-2-4
 # http://linoxide.com/linux-how-to/apache-migration-2-2-to-2-4-ubuntu-14-04/
 #
+# Certificate handleing has changed, obsoletes SSLCertificateChainFile:
+# http://httpd.apache.org/docs/current/mod/mod_ssl.html#sslcertificatefile
+#
 # migrate sites into new naming scheme
 perl /usr/share/doc/apache2/migrate-sites.pl
 # migrate server config snippets into new directory
