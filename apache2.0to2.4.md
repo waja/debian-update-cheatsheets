@@ -12,6 +12,6 @@ see https://gist.github.com/waja/86a3a055c1fedfba3c58#file-wheezy2jessie-sh
 
 # Some more other handy resources
 
-https://www.digitalocean.com/community/tutorials/migrating-your-apache-configuration-from-2-2-to-2-4-syntax
-https://www.linode.com/docs/security/upgrading/updating-virtual-host-settings-from-apache-2-2-to-apache-2-4
-http://linoxide.com/linux-how-to/apache-migration-2-2-to-2-4-ubuntu-14-04/
+https://www.digitalocean.com/community/tutorials/migrating-your-apache-configuration-from-2-2-to-2-4-syntax  
+https://www.linode.com/docs/security/upgrading/updating-virtual-host-settings-from-apache-2-2-to-apache-2-4  
+http://linoxide.com/linux-how-to/apache-migration-2-2-to-2-4-ubuntu-14-04/  
