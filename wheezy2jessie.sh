@@ -88,17 +88,7 @@ sed -i s/^startup=0/startup=1/ /etc/default/shorewall
 aptitude full-upgrade
 
 # Apache2 config migration
-# can be done via https://gist.github.com/waja/9c6ca010bf44b7a6f99c/raw/migrate_apache22to24.sh
-# or sites transition with /usr/share/doc/apache2/migrate-sites.pl
-#
-# More info in /usr/share/doc/apache2/NEWS.Debian.gz
-# Upstream authorization changes: http://httpd.apache.org/docs/2.4/upgrading.html#run-time
-# https://www.digitalocean.com/community/tutorials/migrating-your-apache-configuration-from-2-2-to-2-4-syntax
-# https://www.linode.com/docs/security/upgrading/updating-virtual-host-settings-from-apache-2-2-to-apache-2-4
-# http://linoxide.com/linux-how-to/apache-migration-2-2-to-2-4-ubuntu-14-04/
-#
-# Certificate handleing has changed, obsoletes SSLCertificateChainFile:
-# http://httpd.apache.org/docs/current/mod/mod_ssl.html#sslcertificatefile
+# see also /usr/share/doc/apache2/NEWS.Debian.gz
 #
 # migrate sites into new naming scheme
 perl /usr/share/doc/apache2/migrate-sites.pl
@@ -113,6 +103,8 @@ APACHE2BASEDIR="/etc/apache2"; for CONF in $(ls -l ${APACHE2BASEDIR}/conf.d/ | g
 	CONF=$(basename ${CONF} .conf)
 	a2enconf ${CONF}
 done
+# serveral changes may be needed to adjust content of config files
+# see https://gist.github.com/waja/86a3a055c1fedfba3c58#file-apache2.0to2.4.md
 
 # remove old squeeze packages left around (keep eyes open!)
 apt-get autoremove
