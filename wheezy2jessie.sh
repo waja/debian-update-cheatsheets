@@ -111,8 +111,12 @@ sed -i 's/|exec /| /' /etc/apache2/sites-available/*
 # serveral changes may be needed to adjust content of config files
 # see https://gist.github.com/waja/86a3a055c1fedfba3c58#file-apache2.0to2.4.md
 
-# migrate some redmine stuff
+# migrate redmine plugins
 mv /usr/share/redmine/vendor/plugins/* /usr/share/redmine/plugins/ && rmdir /usr/share/redmine/vendor/plugins/
+# Remove inconsistent link in /usr/share/redmine/vendor/rails
+rm /usr/share/redmine/vendor/rails
+# migrate database config for mysql
+sed -i "s/adapter: mysql/adapter: mysql2/" /etc/redmine/default/database.yml
 
 # remove old squeeze packages left around (keep eyes open!)
 apt-get autoremove
