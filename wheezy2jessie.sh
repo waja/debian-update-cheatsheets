@@ -111,6 +111,9 @@ sed -i 's/|exec /| /' /etc/apache2/sites-available/*
 # serveral changes may be needed to adjust content of config files
 # see https://gist.github.com/waja/86a3a055c1fedfba3c58#file-apache2.0to2.4.md
 
+# migrate some redmine stuff
+mv /usr/share/redmine/vendor/plugins/* /usr/share/redmine/plugins/ && rmdir /usr/share/redmine/vendor/plugins/
+
 # remove old squeeze packages left around (keep eyes open!)
 apt-get autoremove
 aptitude search ?obsolete
