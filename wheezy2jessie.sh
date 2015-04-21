@@ -107,6 +107,8 @@ done
 sed -i "s/Options ExecCGI/Options +ExecCGI/" /etc/apache2/sites-available/*
 # fix probable Piped Logs
 sed -i 's/|exec /| /' /etc/apache2/sites-available/*
+# check for probably incompatible Apache configration statements (see https://gist.github.com/waja/86a3a055c1fedfba3c58#upstream-changes)
+rgrep -iE  "(Order|Allow|Deny|Satisfy) " /etc/apache2/conf-enabled/* | grep -v ":#" && rgrep -iE  "(Order|Allow|Deny|Satisfy) " /etc/apache2/sites-enabled/* | grep -v ":#"
 
 # serveral changes may be needed to adjust content of config files
 # see https://gist.github.com/waja/86a3a055c1fedfba3c58#file-apache2.0to2.4.md
