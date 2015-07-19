@@ -36,7 +36,7 @@ aptitude search "~ahold" | grep "^.h"
 dpkg --get-selections | grep hold
  
 # unmark packages auto
-aptitude unmarkauto vim
+aptitude unmarkauto vim shorewall
 aptitude unmarkauto $(dpkg-query -W 'linux-image-2.6.*' | cut -f1)
  
 # have a look into required and free disk space
