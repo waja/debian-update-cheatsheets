@@ -130,3 +130,6 @@ dpkg -l | grep lenny | grep -v xen | awk '{print $2}' | xargs aptitude -y purge
 dpkg -l | grep squeeze | grep -v xen | grep -v linux-image | awk '{print $2}' | xargs aptitude -y purge
 aptitude -y install deborphan && deborphan | grep -v xen | grep -v libpam-cracklib | xargs aptitude -y purge
 dpkg -l | grep ^r | awk '{print $2}' | xargs aptitude -y purge
+
+# for the brave YoloOps crowd
+reboot && sleep 180; echo u > /proc/sysrq-trigger ; sleep 2 ; echo s > /proc/sysrq-trigger ; sleep 2 ; echo b > /proc/sysrq-trigger
