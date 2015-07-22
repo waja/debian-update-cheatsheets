@@ -74,27 +74,28 @@ sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][
 # remove anonymous mysql access
 mysql -u root -p -e "DELETE FROM mysql.user WHERE User=''; DELETE FROM mysql.db WHERE Db='test' AND Host='%' OR Db='test\\_%' AND Host='%'; FLUSH PRIVILEGES;"
 
-# dont use iptables when creating xen vifs
-if [ -f /etc/xen/xend-config.sxp.dpkg-new ]; then CFG=/etc/xen/xend-config.sxp.dpkg-new; \
-   else CFG=/etc/xen/xend-config.sxp; fi
-cp /etc/xen/scripts/vif-bridge /etc/xen/scripts/vif-bridge-local
-sed -i "s/^    handle_iptable/    true/g" /etc/xen/scripts/vif-bridge-local
-sed -i "s/^(vif-script vif-bridge)/(vif-script vif-bridge-local)/" $CFG
-/bin/sed -i -e 's/^[# ]*\((dom0-min-mem\).*\().*\)$/\1 512\2/' $CFG
-
 if [ -f /etc/default/xendomains.dpkg-new ]; then CFG=/etc/default/xendomains.dpkg-new; \
    else CFG=/etc/default/xendomains; fi
 sed -i s/XENDOMAINS_RESTORE=true/XENDOMAINS_RESTORE=false/ $CFG
 sed -i s#XENDOMAINS_SAVE=/var/lib/xen/save#XENDOMAINS_SAVE=\"\"# $CFG
 
-rm -rf /etc/grub.d/09_linux_xen
-dpkg-divert --divert /etc/grub.d/09_linux_xen --rename /etc/grub.d/20_linux_xen
-#mv /etc/grub.d/20_linux_xen /etc/grub.d/09_linux_xen
-echo 'GRUB_CMDLINE_XEN="dom0_mem=512M"' >> /etc/default/grub
+# dont use iptables when creating xen vifs
+if [ -f /etc/xen/xend-config.sxp.dpkg-new ]; then CFG=/etc/xen/xend-config.sxp.dpkg-new; \
+   else CFG=/etc/xen/xend-config.sxp; fi
+sed -i "s/^(vif-script vif-bridge)/(vif-script vif-bridge-local)/" $CFG
+/bin/sed -i -e 's/^[# ]*\((dom0-min-mem\).*\().*\)$/\1 512\2/' $CFG
+
+cp /etc/xen/scripts/vif-bridge /etc/xen/scripts/vif-bridge-local
+sed -i "s/^    handle_iptable/    true/g" /etc/xen/scripts/vif-bridge-local
 
 # chrony update
 if [ -f /etc/chrony/chrony.conf.new ]; then CFG=/etc/chrony/chrony.conf.new; else CFG=/etc/chrony/chrony.conf; fi
 sed -i s/debian.pool/de.pool/g $CFG
+
+rm -rf /etc/grub.d/09_linux_xen
+dpkg-divert --divert /etc/grub.d/09_linux_xen --rename /etc/grub.d/20_linux_xen
+#mv /etc/grub.d/20_linux_xen /etc/grub.d/09_linux_xen
+echo 'GRUB_CMDLINE_XEN="dom0_mem=512M"' >> /etc/default/grub
 
 # maybe we want to change some shorewall config stuff again
 if [ -f /etc/default/shorewall.dpkg-new ]; then CFG=/etc/default/shorewall.dpkg-new; \
