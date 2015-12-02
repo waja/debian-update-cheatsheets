@@ -126,7 +126,7 @@ dpkg -l | grep quotatool && aptitude update; aptitude safe-upgrade -t wheezy-upd
 # remove old squeeze packages left around (keep eyes open!)
 apt-get autoremove
 aptitude search ?obsolete
-dpkg -l | grep etch | grep -v xen | grep -v unbound | grep -v finch | awk '{print $2}' | xargs aptitude -y purge
+dpkg -l | grep etch | grep -v xen | grep -v unbound | grep -v finch | grep -v fetch | awk '{print $2}' | xargs aptitude -y purge
 dpkg -l | grep lenny | grep -v xen | awk '{print $2}' | xargs aptitude -y purge
 dpkg -l | grep squeeze | grep -v xen | grep -v linux-image | awk '{print $2}' | xargs aptitude -y purge
 aptitude -y install deborphan && deborphan | grep -v xen | grep -v libpam-cracklib | xargs aptitude -y purge
