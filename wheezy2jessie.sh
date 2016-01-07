@@ -125,7 +125,17 @@ sed -i "s/adapter: mysql/adapter: mysql2/" /etc/redmine/default/database.yml
 sed -i "s/DEBCONFILE/DEBCONFFILE/" /var/lib/dpkg/info/clamav-daemon.postinst
 
 # Upgrade postgres
-if [ "$(dpkg -l | grep "postgresql-9.1" | awk {'print $2'})" = "postgresql-9.1" ]; then aptitude install postgresql-9.4 && pg_dropcluster --stop 9.4 main && /etc/init.d/postgresql stop && pg_upgradecluster -v 9.4 9.1 main && pg_dropcluster 9.1 main; fi
+if [ "$(dpkg -l | grep "postgresql-9.1" | awk {'print $2'})" = "postgresql-9.1" ]; then \
+ aptitude install postgresql-9.4 && \
+ pg_dropcluster --stop 9.4 main && \
+ /etc/init.d/postgresql stop && \
+ pg_upgradecluster -v 9.4 9.1 main && \
+ sed -i "s/^manual/auto/g" /etc/postgresql/9.4/main/start.conf && \
+ sed -i "s/^port = .*/port = 5432/" /etc/postgresql/9.4/main/postgresql.conf && \
+ sed -i "s/^shared_buffers = .*/shared_buffers = 128MB/" /etc/postgresql/9.4/main/postgresql.conf && \
+ /etc/init.d/postgresql restart; \
+fi
+pg_dropcluster 9.1 main
 
 # remove old squeeze packages left around (keep eyes open!)
 apt-get autoremove
