@@ -94,16 +94,19 @@ aptitude full-upgrade
 # migrate sites into new naming scheme
 perl /usr/share/doc/apache2/migrate-sites.pl
 # migrate server config snippets into new directory
-APACHE2BASEDIR="/etc/apache2"; for CONF in $(ls -l ${APACHE2BASEDIR}/conf.d/ | grep -v ^l | awk {'print $9'} | grep -v ^$); do
-	if ! [ ${CONF##*.} == "conf" ]; then
-		mv ${APACHE2BASEDIR}/conf.d/${CONF} ${APACHE2BASEDIR}/conf.d/${CONF}.conf
-		CONF="${CONF}.conf"
+cat > /tmp/a2confmigrate << EOF
+APACHE2BASEDIR="/etc/apache2"; for CONF in \$(ls -l \${APACHE2BASEDIR}/conf.d/ | grep -v ^l | awk '{print \$9}' | grep -v ^$); do
+	if ! [ "\${CONF##*.}" == "conf" ]; then
+		mv \${APACHE2BASEDIR}/conf.d/"\${CONF}" \${APACHE2BASEDIR}/conf.d/"\${CONF}".conf
+		CONF="\${CONF}.conf"
 	fi
-	mv ${APACHE2BASEDIR}/conf.d/${CONF} ${APACHE2BASEDIR}/conf-available/${CONF}
+	mv \${APACHE2BASEDIR}/conf.d/"\${CONF}" \${APACHE2BASEDIR}/conf-available/"\${CONF}"
 	# enable this
-	CONF=$(basename ${CONF} .conf)
-	a2enconf ${CONF}
+	CONF=\$(basename "\${CONF}" .conf)
+	a2enconf "\${CONF}"
 done
+EOF
+sh /tmp/a2confmigrate
 # migrate standard Options config to valid one
 sed -i "s/Options ExecCGI/Options +ExecCGI/" /etc/apache2/sites-available/*
 # fix probable Piped Logs
