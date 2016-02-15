@@ -84,6 +84,8 @@ sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][
 
 # maybe we want to change some shorewall config stuff again
 sed -i s/^startup=0/startup=1/ /etc/default/shorewall
+# nat helper needs to be install (http://shorewall.net/Helpers.html#idp8854577312)
+ucf /usr/share/shorewall/configfiles/conntrack /etc/shorewall/conntrack
 
 # full-upgrade
 aptitude full-upgrade
