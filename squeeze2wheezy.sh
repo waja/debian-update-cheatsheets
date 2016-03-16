@@ -9,6 +9,7 @@ dpkg-reconfigure locales
 rm -rf /etc/network/options /etc/environment
  
 # change distro (please move 3rd party sources to /etc/apt/sources.list.d/), maybe look into http://ftp.cyconet.org/debian/sources.list.d/
+rm -f /etc/apt/apt.conf.d/10disable_date_check
 sed -i s/squeeze/wheezy/g /etc/apt/sources.list*
 sed -i "s/ stable/ wheezy/g" /etc/apt/sources.list*
 sed -i s/squeeze/wheezy/g /etc/apt/preferences*
