@@ -67,6 +67,10 @@ sed -i "s/^ rocommunity public/# rocommunity public/" $CFG
 sed -i "s/^ rocommunity6 public/# rocommunity6 public/" $CFG
 sed -i "s/agentAddress  udp:127/#agentAddress  udp:127/" $CFG
 
+# fix our xen modification
+rm -rf /etc/grub.d/09_linux_xen
+dpkg-divert --divert /etc/grub.d/09_linux_xen --rename /etc/grub.d/20_linux_xen
+
 # chrony update
 if [ -f /etc/chrony/chrony.conf.new ]; then CFG=/etc/chrony/chrony.conf.new; else CFG=/etc/chrony/chrony.conf; fi
 sed -i s/debian.pool/de.pool/g $CFG
