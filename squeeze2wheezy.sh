@@ -7,7 +7,9 @@ dpkg-reconfigure locales
 
 # remove unused config file
 rm -rf /etc/network/options /etc/environment
- 
+
+# remove squeeze-lts apt preference
+PREFERENCES="/etc/apt/preferences"; sed -i -n '/squeeze-lts/{N;s/.*//;x;d;};x;p;${x;p;}' $PREFERENCES; sed -i '/^$/d' $PREFERENCES
 # change distro (please move 3rd party sources to /etc/apt/sources.list.d/), maybe look into http://ftp.cyconet.org/debian/sources.list.d/
 rm -f /etc/apt/apt.conf.d/10disable_date_check
 rm -f /etc/apt/sources.list.d/*squeeze*
@@ -24,12 +26,6 @@ if [ "$( dpkg -l | grep "^ii.*php5-suhosin" | wc -l)" -ge "1" ]; then \
   wget http://ftp.cyconet.org/debian/sources.list.d/wheezy-updates-cyconet.list \
   -O /etc/apt/sources.list.d/wheezy-updates-cyconet.list
 fi
-cat >> /etc/apt/preferences <<EOF
-Package: *
-Pin: release a=squeeze-lts
-Pin-Priority: 200
-
-EOF
 aptitude update
 
 # check package status
