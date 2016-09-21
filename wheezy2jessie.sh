@@ -51,6 +51,10 @@ EOF
 # update aptitude first
 [ "$(which aptitude)" = "/usr/bin/aptitude" ] && aptitude install aptitude
 
+# remove php5-suhosin, which doesn't exist in jessie anymore
+if [ "$( dpkg -l | grep "^ii.*php5-suhosin" | wc -l)" -ge "1" ]; then \
+   apt-get remove php5-suhosin
+fi
 # minimal system upgrade (keep sysvinit / see http://noone.org/talks/debian-ohne-systemd/debian-ohne-systemd-clt.html#%2811%29)
 aptitude upgrade '~U' 'sysvinit-core+'
 
