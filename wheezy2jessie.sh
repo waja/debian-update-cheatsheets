@@ -154,6 +154,10 @@ if [ "$(dpkg -l | grep "postgresql-9.1" | awk {'print $2'})" = "postgresql-9.1" 
 fi
 pg_dropcluster 9.1 main
 
+# xen: use our own bridge script again, when we did before
+[ $(grep "^(vif-script vif-bridge-local" /etc/xen/xend-config.sxp | wc -l) -gt 0 ] && \
+ sed -i 's/#vif.default.script="vif-bridge"/vif.default.script="vif-bridge-local"/' /etc/xen/xl.conf
+
 # remove old squeeze packages left around (keep eyes open!)
 apt-get autoremove
 aptitude search ?obsolete
