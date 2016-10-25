@@ -55,6 +55,10 @@ EOF
 if [ "$( dpkg -l | grep "^ii.*php5-suhosin" | wc -l)" -ge "1" ]; then \
    apt-get remove php5-suhosin
 fi
+# remove obsolete php5-ps
+if [ "$( dpkg -l | grep "^ii.*php5-ps" | wc -l)" -ge "1" ]; then \
+   apt-get remove php5-ps
+fi
 # minimal system upgrade (keep sysvinit / see http://noone.org/talks/debian-ohne-systemd/debian-ohne-systemd-clt.html#%2811%29)
 aptitude upgrade '~U' 'sysvinit-core+'
 
