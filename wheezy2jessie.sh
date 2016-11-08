@@ -31,7 +31,7 @@ dpkg --get-selections | grep hold
  
 # unmark packages auto
 aptitude unmarkauto vim
-aptitude unmarkauto monitoring-plugins-standard monitoring-plugins-basic
+aptitude unmarkauto monitoring-plugins-standard monitoring-plugins-common monitoring-plugins-basic
 aptitude unmarkauto $(dpkg-query -W 'linux-image-3.2.*' | cut -f1)
  
 # have a look into required and free disk space
@@ -67,9 +67,10 @@ if [ -f /etc/pam.d/su.dpkg-new ]; then CFG=/etc/pam.d/su.dpkg-new; else CFG=/etc
 sed -i "s/# auth       required   pam_wheel.so/auth       required   pam_wheel.so/" $CFG
 
 # (re)configure snmpd
+COMMUNITY="mycommunity"; \
 if [ -f /etc/snmp/snmpd.conf.dpkg-new ]; then CFG=/etc/snmp/snmpd.conf.dpkg-new; \
    else CFG=/etc/snmp/snmpd.conf; fi
-sed -i "s^#rocommunity secret  10.0.0.0/16^rocommunity mycommunity^g" $CFG
+sed -i "s^#rocommunity secret  10.0.0.0/16^rocommunity $COMMUNITY^g" $CFG
 sed -i s/#agentAddress/agentAddress/ $CFG
 sed -i "s/^ rocommunity public/# rocommunity public/" $CFG
 sed -i "s/^ rocommunity6 public/# rocommunity6 public/" $CFG
