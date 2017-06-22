@@ -88,6 +88,22 @@ sed -i "s/agentAddress  udp:127/#agentAddress  udp:127/" $CFG
 if [ -f /etc/chrony/chrony.conf.new ]; then CFG=/etc/chrony/chrony.conf.new; else CFG=/etc/chrony/chrony.conf; fi
 sed -i s/2.debian.pool/0.de.pool/g $CFG
 
+# migrate unattended-upgrades config
+if [ -f /etc/apt/apt.conf.d/50unattended-upgrades.dpkg-new ]; then CFG=/etc/apt/apt.conf.d/50unattended-upgrades.dpkg-new; \
+   else CFG=/etc/apt/apt.conf.d/50unattended-upgrades; fi
+sed -i s/jessie/stretch/g $CFG
+sed -i s/crontrib/contrib/g $CFG
+sed -i "s#// If automatic reboot is enabled and needed, reboot at the specific#// Automatically reboot even if there are users currently logged in.\n//Unattended-Upgrade::Automatic-Reboot-WithUsers \"true\";\n\n// If automatic reboot is enabled and needed, reboot at the specific#" $CFG
+cat >> $CFG <<EOF
+
+// Enable logging to syslog. Default is False
+// Unattended-Upgrade::SyslogEnable "false";
+
+// Specify syslog facility. Default is daemon
+// Unattended-Upgrade::SyslogFacility "daemon";
+
+EOF
+
 # randomize crontab
 if [ -f /etc/crontab.dpkg-new ]; then CFG=/etc/crontab.dpkg-new; else CFG=/etc/crontab; fi
 sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' $CFG
