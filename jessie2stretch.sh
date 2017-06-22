@@ -86,7 +86,7 @@ sed -i "s/agentAddress  udp:127/#agentAddress  udp:127/" $CFG
 
 # chrony update
 if [ -f /etc/chrony/chrony.conf.new ]; then CFG=/etc/chrony/chrony.conf.new; else CFG=/etc/chrony/chrony.conf; fi
-sed -i s/debian.pool/de.pool/g $CFG
+sed -i s/2.debian.pool/0.de.pool/g $CFG
 
 # randomize crontab
 if [ -f /etc/crontab.dpkg-new ]; then CFG=/etc/crontab.dpkg-new; else CFG=/etc/crontab; fi
