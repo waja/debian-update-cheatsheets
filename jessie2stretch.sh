@@ -6,7 +6,16 @@ dpkg-reconfigure locales
 
 # remove unused config file
 rm -rf /etc/network/options /etc/environment
- 
+
+# migrate over to systemd (before the upgrade)
+aptitude install systemd
+
+# are there 3rd party packages installed? (https://www.debian.org/releases/stretch/amd64/release-notes/ch-upgrading.de.html#system-status)
+aptitude search '~i(!~ODebian)'
+
+# check for ftp protocol in sources lists (https://www.debian.org/releases/stretch/amd64/release-notes/ch-information.en.html#deprecation-of-ftp-apt-mirrors)
+grep --color "deb ftp" /etc/apt/sources.list*
+
 # Transition and remove entries from older releases
 sed -i /etch/d /etc/apt/sources.list*
 sed -i /lenny/d /etc/apt/sources.list*
@@ -29,9 +38,8 @@ aptitude search "~ahold" | grep "^.h"
 dpkg --get-selections | grep hold
  
 # unmark packages auto
-aptitude unmarkauto vim
+aptitude unmarkauto vim net-tools
 aptitude unmarkauto monitoring-plugins-standard monitoring-plugins-common monitoring-plugins-basic
-aptitude unmarkauto open-vm-tools-dkms ifenslave
 aptitude unmarkauto $(dpkg-query -W 'linux-image-3.16*' | cut -f1)
  
 # have a look into required and free disk space
@@ -50,9 +58,6 @@ EOF
 
 # update aptitude first
 [ "$(which aptitude)" = "/usr/bin/aptitude" ] && aptitude install aptitude
-
-# migrate over to systemd
-aptitude install systemd
 
 # minimal system upgrade (keep sysvinit / see http://noone.org/talks/debian-ohne-systemd/debian-ohne-systemd-clt.html#%2811%29)
 aptitude upgrade
@@ -98,6 +103,7 @@ systemctl enable shorewall
 aptitude full-upgrade
 
 # Upgrade postgres
+# See also https://www.debian.org/releases/stretch/amd64/release-notes/ch-information.de.html#plperl
 if [ "$(dpkg -l | grep "postgresql-9.4" | awk {'print $2'})" = "postgresql-9.4" ]; then \
  aptitude install postgresql-9.6 && \
  pg_dropcluster --stop 9.6 main && \
@@ -123,7 +129,7 @@ dpkg -l | grep -E 'deb6|squeeze' | grep -v xen | awk '{print $2}' | xargs aptitu
 dpkg -l | grep -E 'deb7|wheezy' | grep -v xen | grep -v  -E 'linux-image|mailscanner|openswan|debian-security-support' | awk '{print $2}' | xargs aptitude -y purge
 dpkg -l | grep -E 'deb8|jessie' | grep -v xen | grep -v  -E 'linux-image|debian-security-support' | awk '{print $2}' | xargs aptitude -y purge
 aptitude -y install deborphan && deborphan | grep -v xen | grep -v libpam-cracklib | xargs aptitude -y purge
-dpkg -l | grep ^r | awk '{print $2}' | xargs aptitude -y purge
+apt-get purge $(dpkg -l | awk '/^rc/ { print $2 }')
 
 # for the brave YoloOps crowd
 reboot && sleep 180; echo u > /proc/sysrq-trigger ; sleep 2 ; echo s > /proc/sysrq-trigger ; sleep 2 ; echo b > /proc/sysrq-trigger
