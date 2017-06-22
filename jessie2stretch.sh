@@ -14,7 +14,7 @@ aptitude install systemd
 aptitude search '~i(!~ODebian)'
 
 # check for ftp protocol in sources lists (https://www.debian.org/releases/stretch/amd64/release-notes/ch-information.en.html#deprecation-of-ftp-apt-mirrors)
-grep --color "deb ftp" /etc/apt/sources.list*
+rgrep --color "deb ftp" /etc/apt/sources.list*
 
 # Transition and remove entries from older releases
 sed -i /etch/d /etc/apt/sources.list*
