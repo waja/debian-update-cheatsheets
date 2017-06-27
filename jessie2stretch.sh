@@ -91,11 +91,6 @@ cat >> $CFG <<EOF
 
 EOF
 
-## randomize crontab
-#if [ -f /etc/crontab.dpkg-new ]; then CFG=/etc/crontab.dpkg-new; else CFG=/etc/crontab; fi
-#sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' $CFG
-#sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' $CFG
-
 ## phpmyadmin
 #if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
 #   else CFG=/etc/phpmyadmin/config.inc.php; fi
