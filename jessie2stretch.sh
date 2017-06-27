@@ -142,13 +142,14 @@ pg_dropcluster 9.4 main
 
 # remove old squeeze packages left around (keep eyes open!)
 apt-get autoremove
-aptitude search ?obsolete
-dpkg -l | grep etch | grep -v xen | grep -v unbound | grep -v finch | awk '{print $2}' | xargs aptitude -y purge
-dpkg -l | grep lenny | grep -v xen | awk '{print $2}' | xargs aptitude -y purge
-dpkg -l | grep -E 'deb6|squeeze' | grep -v xen | awk '{print $2}' | xargs aptitude -y purge
-dpkg -l | grep -E 'deb7|wheezy' | grep -v xen | grep -v  -E 'linux-image|mailscanner|openswan|debian-security-support' | awk '{print $2}' | xargs aptitude -y purge
-dpkg -l | grep -E 'deb8|jessie' | grep -v xen | grep -v  -E 'linux-image|debian-security-support' | awk '{print $2}' | xargs aptitude -y purge
-aptitude -y install deborphan && deborphan | grep -v xen | grep -v libpam-cracklib | xargs aptitude -y purge
+apt-get purge $(dpkg -l | awk '/gcc-4.9/ { print $2 }')
+apt-get purge $(aptitude search ?obsolete | grep -v linux-image | awk '/^i/ { print $2 }')
+apt-get purge $(dpkg -l | grep etch | grep -v xen | grep -v unbound | grep -v finch | awk '/^rc/ { print $2 }')
+apt-get purge $(dpkg -l | grep lenny | grep -v xen | awk '/^rc/ { print $2 }')
+apt-get purge $(dpkg -l | grep -E 'deb6|squeeze' | grep -v xen | awk '/^rc/ { print $2 }')
+apt-get purge $(dpkg -l | grep -E 'deb7|wheezy' | grep -v xen | grep -v  -E 'linux-image|mailscanner|openswan|debian-security-support' | awk '/^rc/ { print $2 }')
+apt-get purge $(dpkg -l | grep -E 'deb8|jessie' | grep -v xen | grep -v  -E 'linux-image|debian-security-support' | awk '{ print $2 }')
+aptitude -y install deborphan && apt-get purge $(deborphan | grep -v xen | grep -v libpam-cracklib | awk '/^rc/ { print $2 }')
 apt-get purge $(dpkg -l | awk '/^rc/ { print $2 }')
 
 # for the brave YoloOps crowd
