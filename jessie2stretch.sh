@@ -34,6 +34,7 @@ sed -i "s/ stable/ stretch/g" /etc/apt/sources.list*
 sed -i s/jessie/stretch/g /etc/apt/preferences*
 sed -i s/jessie/stretch/g /etc/apt/sources.list.d/*jessie*
 rename s/jessie/stretch/g /etc/apt/sources.list.d/*jessie*
+rgrep jessie /etc/apt/sources.list*
 aptitude update
 
 # check package status
