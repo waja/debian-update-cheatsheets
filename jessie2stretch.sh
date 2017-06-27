@@ -97,6 +97,9 @@ if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/conf
 sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
 sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" $CFG
 
+# Move configs from MySQl to MariaDB config location
+mv /etc/mysql/conf.d/bind.cnf /etc/mysql/mariadb.conf.d/90-bind.cnf
+
 # maybe we want to change some shorewall config stuff again
 # shorewall needs to be enabled via systemctl, /etc/default is not used by systemd
 systemctl enable shorewall
