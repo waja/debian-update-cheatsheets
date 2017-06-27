@@ -67,20 +67,6 @@ EOF
 # minimal system upgrade (keep sysvinit / see http://noone.org/talks/debian-ohne-systemd/debian-ohne-systemd-clt.html#%2811%29)
 aptitude upgrade
 
-## (re)enable wheel
-#if [ -f /etc/pam.d/su.dpkg-new ]; then CFG=/etc/pam.d/su.dpkg-new; else CFG=/etc/pam.d/su; fi
-#sed -i "s/# auth       required   pam_wheel.so/auth       required   pam_wheel.so/" $CFG
-
-## (re)configure snmpd
-#COMMUNITY="mycommunity"; \
-#if [ -f /etc/snmp/snmpd.conf.dpkg-new ]; then CFG=/etc/snmp/snmpd.conf.dpkg-new; \
-#   else CFG=/etc/snmp/snmpd.conf; fi
-#sed -i "s^#rocommunity secret  10.0.0.0/16^rocommunity $COMMUNITY^g" $CFG
-#sed -i s/#agentAddress/agentAddress/ $CFG
-#sed -i "s/^ rocommunity public/# rocommunity public/" $CFG
-#sed -i "s/^ rocommunity6 public/# rocommunity6 public/" $CFG
-#sed -i "s/agentAddress  udp:127/#agentAddress  udp:127/" $CFG
-
 ## fix our xen modification
 #rm -rf /etc/grub.d/09_linux_xen
 #dpkg-divert --divert /etc/grub.d/09_linux_xen --rename /etc/grub.d/20_linux_xen
