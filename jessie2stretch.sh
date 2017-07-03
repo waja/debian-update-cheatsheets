@@ -8,7 +8,7 @@ dpkg-reconfigure locales
 rm -rf /etc/network/options /etc/environment
 
 # migrate over to systemd (before the upgrade)
-aptitude install systemd
+aptitude install systemd systemd-sysv
 
 # Disable loading defaults.vim
 echo '" disable the loading of defaults.vim' >> /etc/vim/vimrc.local
