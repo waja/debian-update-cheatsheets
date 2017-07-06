@@ -110,6 +110,10 @@ apt-get dist-upgrade
 # Fix IfModule mod_php5 in apache2 vHosts
 sed -i "s/IfModule mod_php5/IfModule mod_php7/g" /etc/apache2/sites-available/*
 
+# Fix our ssh pub key package configuration
+[ -x /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst ] && \
+  /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst configure
+
 # Upgrade postgres
 # See also https://www.debian.org/releases/stretch/amd64/release-notes/ch-information.de.html#plperl
 if [ "$(dpkg -l | grep "postgresql-9.4" | awk {'print $2'})" = "postgresql-9.4" ]; then \
