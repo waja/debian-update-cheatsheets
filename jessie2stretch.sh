@@ -97,7 +97,7 @@ if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/conf
 sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
 sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" $CFG
 
-# Move configs from MySQl to MariaDB config location
+# Move configs from MySQl to MariaDB config location (e.g.)
 mv /etc/mysql/conf.d/bind.cnf /etc/mysql/mariadb.conf.d/90-bind.cnf
 
 # maybe we want to change some shorewall config stuff again
@@ -106,6 +106,9 @@ systemctl enable shorewall
 
 # full-upgrade
 apt-get dist-upgrade
+
+# Fix IfModule mod_php5 in apache2 vHosts
+sed -i "s/IfModule mod_php5/IfModule mod_php7/g" /etc/apache2/sites-available/*
 
 # Upgrade postgres
 # See also https://www.debian.org/releases/stretch/amd64/release-notes/ch-information.de.html#plperl
