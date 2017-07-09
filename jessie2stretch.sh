@@ -109,6 +109,7 @@ apt-get dist-upgrade
 
 # Fix IfModule mod_php5 in apache2 vHosts
 sed -i "s/IfModule mod_php5/IfModule mod_php7/g" /etc/apache2/sites-available/*
+a2dismod php5; a2enmod php7.0 && systemctl restart apache2
 
 # Fix our ssh pub key package configuration
 [ -x /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst ] && \
