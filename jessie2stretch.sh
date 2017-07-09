@@ -10,10 +10,6 @@ rm -rf /etc/network/options /etc/environment
 # migrate over to systemd (before the upgrade)
 aptitude install systemd systemd-sysv
 
-# Disable loading defaults.vim
-echo '" disable the loading of defaults.vim' >> /etc/vim/vimrc.local
-echo "let g:skip_defaults_vim = 1" >> /etc/vim/vimrc.local
-
 # are there 3rd party packages installed? (https://www.debian.org/releases/stretch/amd64/release-notes/ch-upgrading.de.html#system-status)
 aptitude search '~i(!~ODebian)'
 
@@ -60,6 +56,10 @@ libc6 glibc/restart-services string
 libc6 libraries/restart-without-asking boolean true
 EOF
 /usr/bin/debconf-set-selections /tmp/stretch.preseed
+
+# Disable loading defaults.vim
+echo '" disable the loading of defaults.vim' >> /etc/vim/vimrc.local
+echo "let g:skip_defaults_vim = 1" >> /etc/vim/vimrc.local
 
 # update aptitude first
 [ "$(which aptitude)" = "/usr/bin/aptitude" ] && aptitude install aptitude
