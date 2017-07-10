@@ -99,6 +99,8 @@ sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][
 
 # Move configs from MySQl to MariaDB config location (e.g.)
 mv /etc/mysql/conf.d/bind.cnf /etc/mysql/mariadb.conf.d/90-bind.cnf
+# In some cases the upgrade of databases seems not work out
+mysql_upgrade -f -p
 
 # maybe we want to change some shorewall config stuff again
 # shorewall needs to be enabled via systemctl, /etc/default is not used by systemd
