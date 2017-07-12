@@ -110,12 +110,15 @@ systemctl enable shorewall
 apt-get dist-upgrade
 
 # Fix IfModule mod_php5 in apache2 vHosts
-sed -i "s/IfModule mod_php5/IfModule mod_php7/g" /etc/apache2/sites-available/*
+sed -i "s/IfModule mod_php5/IfModule mod_php/g" /etc/apache2/sites-available/*
 a2dismod php5; a2enmod php7.0 && systemctl restart apache2
 
 # Fix our ssh pub key package configuration
 [ -x /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst ] && \
   /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst configure
+
+# snmpd now runs as Debian-snmp user, fixing sudo config
+sed -i s/snmp/Debian-snmp/ /etc/sudoers.d/*
 
 # Upgrade postgres
 # See also https://www.debian.org/releases/stretch/amd64/release-notes/ch-information.de.html#plperl
