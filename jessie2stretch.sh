@@ -91,6 +91,11 @@ cat >> $CFG <<EOF
 
 EOF
 
+# dnsmasq config dir
+if [ -f /etc/dnsmasq.conf.dpkg-new ]; then CFG=/etc/dnsmasq.conf.dpkg-new; \
+   else CFG=/etc/dnsmasq.conf; fi
+sed -i "s%^#conf-dir=/etc/dnsmasq.d/%conf-dir=/etc/dnsmasq.d/%" $CFG
+
 ## phpmyadmin
 if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
    else CFG=/etc/phpmyadmin/config.inc.php; fi
