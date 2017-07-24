@@ -114,6 +114,8 @@ systemctl enable shorewall
 # full-upgrade
 apt-get dist-upgrade
 
+# Migrate php5 packages over to php meta packages
+apt install $(dpkg -l |grep php5 | awk '/^i/ { print $2 }' |grep -v ^php5$ |sed s/php5/php/)
 # Fix IfModule mod_php5 in apache2 vHosts
 sed -i "s/IfModule mod_php5/IfModule mod_php/g" /etc/apache2/sites-available/*
 a2dismod php5; a2enmod php7.0 && systemctl restart apache2
