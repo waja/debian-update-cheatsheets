@@ -145,6 +145,9 @@ pg_dropcluster 9.4 main
 #[ $(grep "^(vif-script vif-bridge-local" /etc/xen/xend-config.sxp | wc -l) -gt 0 ] && \
 # sed -i 's/#vif.default.script="vif-bridge"/vif.default.script="vif-bridge-local"/' /etc/xen/xl.conf
 
+# migrate/backup your images (before) migrating to docker overlay2 storage driver
+# rm -rf /var/lib/docker/aufs
+
 # remove old squeeze packages left around (keep eyes open!)
 apt autoremove && \
 apt purge $(dpkg -l | awk '/gcc-4.9/ { print $2 }') && \
