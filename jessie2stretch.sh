@@ -146,7 +146,7 @@ pg_dropcluster 9.4 main
 # sed -i 's/#vif.default.script="vif-bridge"/vif.default.script="vif-bridge-local"/' /etc/xen/xl.conf
 
 # migrate/backup your images (before) migrating to docker overlay2 storage driver
-# rm -rf /var/lib/docker/aufs
+# umount /var/lib/docker/aufs; rm -rf /var/lib/docker/aufs
 
 # remove old squeeze packages left around (keep eyes open!)
 apt autoremove && \
