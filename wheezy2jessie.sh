@@ -30,9 +30,9 @@ aptitude search "~ahold" | grep "^.h"
 dpkg --get-selections | grep hold
  
 # unmark packages auto
-aptitude unmarkauto vim
-aptitude unmarkauto monitoring-plugins-standard monitoring-plugins-common monitoring-plugins-basic
-aptitude unmarkauto open-vm-tools-dkms ifenslave
+aptitude unmarkauto vim && \
+aptitude unmarkauto monitoring-plugins-standard monitoring-plugins-common monitoring-plugins-basic && \
+aptitude unmarkauto open-vm-tools-dkms ifenslave && \
 aptitude unmarkauto $(dpkg-query -W 'linux-image-3.2.*' | cut -f1)
  
 # have a look into required and free disk space
