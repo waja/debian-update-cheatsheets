@@ -40,6 +40,7 @@ dpkg --get-selections | grep hold
  
 # unmark packages auto
 aptitude unmarkauto vim net-tools && \
+aptitude unmarkauto libapache2-mpm-itk && \
 aptitude unmarkauto monitoring-plugins-standard monitoring-plugins-common monitoring-plugins-basic && \
 aptitude unmarkauto $(dpkg-query -W 'linux-image-3.16*' | cut -f1)
  
