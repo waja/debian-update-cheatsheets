@@ -24,6 +24,9 @@ sed -i s/wheezy/jessie/g /etc/apt/sources.list.d/*wheezy*
 rename s/wheezy/jessie/g /etc/apt/sources.list.d/*wheezy*
 aptitude update
 
+# Set for example a package on hold
+PACKAGE="mailscanner"; echo $PACKAGE hold |dpkg --set-selections; aptitude hold $PACKAGE
+
 # check package status
 dpkg --audit
 aptitude search "~ahold" | grep "^.h"
