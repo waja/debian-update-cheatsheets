@@ -36,6 +36,7 @@ dpkg --get-selections | grep hold
 aptitude unmarkauto vim && \
 aptitude unmarkauto monitoring-plugins-standard monitoring-plugins-common monitoring-plugins-basic && \
 aptitude unmarkauto open-vm-tools-dkms ifenslave && \
+aptitude unmarkauto xen-system-amd64 && aptitude unmarkauto $(dpkg-query -W 'xen-linux-system-*' | cut -f1) \
 aptitude unmarkauto $(dpkg-query -W 'linux-image-3.2.*' | cut -f1)
  
 # have a look into required and free disk space
