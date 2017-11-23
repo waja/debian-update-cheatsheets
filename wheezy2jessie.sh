@@ -101,7 +101,8 @@ sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
 sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" $CFG
 
 # maybe we want to change some shorewall config stuff again
-sed -i s/^startup=0/startup=1/ /etc/default/shorewall
+if [ -f /etc/default/shorewall.dpkg-new ]; then CFG=/etc/default/shorewall.dpkg-new; else CFG=/etc/default/shorewall; fi
+sed -i 's/^startup=0/startup=1/' $CFG
 # nat helper needs to be install (http://shorewall.net/Helpers.html#idp8854577312)
 ucf /usr/share/shorewall/configfiles/conntrack /etc/shorewall/conntrack
 
