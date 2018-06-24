@@ -145,6 +145,9 @@ if [ "$(dpkg -l | grep "postgresql-9.4" | awk {'print $2'})" = "postgresql-9.4" 
 fi
 pg_dropcluster 9.4 main
 
+# Fix forbitten dovecot ssl_protocols
+sed -i "s/\!SSLv2 \!SSLv3/\!SSLv3/g" /etc/dovecot/local.conf && service dovecot restart
+
 # xen: use our own bridge script again, when we did before
 #[ $(grep "^(vif-script vif-bridge-local" /etc/xen/xend-config.sxp | wc -l) -gt 0 ] && \
 # sed -i 's/#vif.default.script="vif-bridge"/vif.default.script="vif-bridge-local"/' /etc/xen/xl.conf
