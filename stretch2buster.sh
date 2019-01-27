@@ -7,9 +7,6 @@ dpkg-reconfigure locales
 # remove unused config file
 rm -rf /etc/network/options /etc/environment
 
-# migrate over to systemd (before the upgrade) / you might want reboot if you install systemd
-aptitude install systemd systemd-sysv libpam-systemd
-
 # are there 3rd party packages installed? (https://www.debian.org/releases/buster/amd64/release-notes/ch-upgrading.de.html#system-status)
 aptitude search '~i(!~ODebian)'
 
