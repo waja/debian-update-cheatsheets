@@ -14,7 +14,6 @@ aptitude search '~i(!~ODebian)'
 rgrep --color "deb ftp" /etc/apt/sources.list*
 
 # Transition and remove entries from older releases
-sed -i /etch/d /etc/apt/sources.list*
 sed -i /lenny/d /etc/apt/sources.list*
 sed -i /sarge/d /etc/apt/sources.list*
 sed -i /squeeze/d /etc/apt/sources.list*
