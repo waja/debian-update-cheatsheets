@@ -42,8 +42,7 @@ dpkg --get-selections | grep hold
 # unmark packages auto
 aptitude unmarkauto vim net-tools && \
 aptitude unmarkauto libapache2-mpm-itk && \
-aptitude unmarkauto monitoring-plugins-standard monitoring-plugins-common monitoring-plugins-basic && \
-aptitude unmarkauto $(dpkg-query -W 'linux-image-3.16*' | cut -f1)
+aptitude unmarkauto $(dpkg-query -W 'linux-image-4.9.0*' | cut -f1)
  
 # have a look into required and free disk space
 apt-get -o APT::Get::Trivial-Only=true dist-upgrade || df -h
@@ -59,19 +58,11 @@ libc6 libraries/restart-without-asking boolean true
 EOF
 /usr/bin/debconf-set-selections /tmp/stretch.preseed
 
-# Disable loading defaults.vim
-echo '" disable the loading of defaults.vim' >> /etc/vim/vimrc.local
-echo "let g:skip_defaults_vim = 1" >> /etc/vim/vimrc.local
-
 # update aptitude first
 [ "$(which aptitude)" = "/usr/bin/aptitude" ] && aptitude install aptitude
 
-# minimal system upgrade (keep sysvinit / see http://noone.org/talks/debian-ohne-systemd/debian-ohne-systemd-clt.html#%2811%29)
+# minimal system upgrade
 aptitude upgrade
-
-## fix our xen modification
-#rm -rf /etc/grub.d/09_linux_xen
-#dpkg-divert --divert /etc/grub.d/09_linux_xen --rename /etc/grub.d/20_linux_xen
 
 # chrony update
 if [ -f /etc/chrony/chrony.conf.new ]; then CFG=/etc/chrony/chrony.conf.new; else CFG=/etc/chrony/chrony.conf; fi
@@ -93,68 +84,14 @@ cat >> $CFG <<EOF
 
 EOF
 
-# dnsmasq config dir
-if [ -f /etc/dnsmasq.conf.dpkg-new ]; then CFG=/etc/dnsmasq.conf.dpkg-new; \
-   else CFG=/etc/dnsmasq.conf; fi
-sed -i "s%^#conf-dir=/etc/dnsmasq.d/%conf-dir=/etc/dnsmasq.d/%" $CFG
-
 ## phpmyadmin
 if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
    else CFG=/etc/phpmyadmin/config.inc.php; fi
 sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
 sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" $CFG
 
-# Move configs from MySQl to MariaDB config location (e.g.)
-mv /etc/mysql/conf.d/bind.cnf /etc/mysql/mariadb.conf.d/90-bind.cnf
-# In some cases the upgrade of databases seems not work out (problems with mysql.proc)
-mysql_upgrade -f -p
-# have look into https://mariadb.com/kb/en/the-mariadb-library/moving-from-mysql-to-mariadb-in-debian-9/#configuration-options-for-advanced-database-users
-
-# maybe we want to change some shorewall config stuff again
-# shorewall needs to be enabled via systemctl, /etc/default is not used by systemd
-systemctl enable shorewall
-
 # full-upgrade
 apt-get dist-upgrade
-
-# Migrate php5 packages over to php meta packages
-apt install $(dpkg -l |grep php5 | awk '/^i/ { print $2 }' |grep -v ^php5$ |sed s/php5/php/)
-# Fix IfModule mod_php5 in apache2 vHosts
-sed -i "s/IfModule mod_php5/IfModule mod_php7/g" /etc/apache2/sites-available/*
-# are there config needed to me migrated over to php my hand?
-ls -la /etc/php5/{apache2,cli}/conf.d/
-a2dismod php5; a2enmod php7.0 && systemctl restart apache2
-
-# Fix our ssh pub key package configuration
-[ -x /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst ] && \
-  /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst configure
-
-# snmpd now runs as Debian-snmp user, fixing sudo config
-sed -i s/snmp/Debian-snmp/ /etc/sudoers.d/*
-
-# Upgrade postgres
-# See also https://www.debian.org/releases/stretch/amd64/release-notes/ch-information.de.html#plperl
-if [ "$(dpkg -l | grep "postgresql-9.4" | awk {'print $2'})" = "postgresql-9.4" ]; then \
- aptitude install postgresql-9.6 && \
- pg_dropcluster --stop 9.6 main && \
- /etc/init.d/postgresql stop && \
- pg_upgradecluster -v 9.6 9.4 main && \
- sed -i "s/^manual/auto/g" /etc/postgresql/9.6/main/start.conf && \
- sed -i "s/^port = .*/port = 5432/" /etc/postgresql/9.6/main/postgresql.conf && \
- sed -i "s/^shared_buffers = .*/shared_buffers = 128MB/" /etc/postgresql/9.6/main/postgresql.conf && \
- /etc/init.d/postgresql restart; \
-fi
-pg_dropcluster 9.4 main
-
-# Fix forbitten dovecot ssl_protocols
-sed -i "s/\!SSLv2 \!SSLv3/\!SSLv3/g" /etc/dovecot/local.conf && service dovecot restart
-
-# xen: use our own bridge script again, when we did before
-#[ $(grep "^(vif-script vif-bridge-local" /etc/xen/xend-config.sxp | wc -l) -gt 0 ] && \
-# sed -i 's/#vif.default.script="vif-bridge"/vif.default.script="vif-bridge-local"/' /etc/xen/xl.conf
-
-# migrate/backup your images (before) migrating to docker overlay2 storage driver
-# umount /var/lib/docker/aufs; rm -rf /var/lib/docker/aufs
 
 # remove old squeeze packages left around (keep eyes open!)
 apt autoremove && \
@@ -174,25 +111,20 @@ apt purge $(dpkg -l | awk '/^rc/ { print $2 }')
 reboot && sleep 180; echo u > /proc/sysrq-trigger ; sleep 2 ; echo s > /proc/sysrq-trigger ; sleep 2 ; echo b > /proc/sysrq-trigger
 
 ### not needed until now
-# mysql
-# remove anonymous mysql access
-#mysql -u root -p -e "DELETE FROM mysql.user WHERE User=''; DELETE FROM mysql.db WHERE Db='test' AND Host='%' OR Db='test\\_%' AND Host='%'; FLUSH PRIVILEGES;"
+# Fix our ssh pub key package configuration
+[ -x /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst ] && \
+  /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst configure
 
-# dont use iptables when creating xen vifs
-#cp /etc/xen/scripts/vif-bridge /etc/xen/scripts/vif-bridge-local
-#sed -i "s/^    handle_iptable/    true/g" /etc/xen/scripts/vif-bridge-local
-#sed -i "s/^(vif-script vif-bridge)/(vif-script vif-bridge-local)/" /etc/xen/xend-config.sxp
-
-# xen
-#/bin/sed -i -e 's/^[# ]*\((dom0-min-mem\).*\().*\)$/\1 512\2/' /etc/xen/xend-config.sxp
-#sed -i s/XENDOMAINS_RESTORE=true/XENDOMAINS_RESTORE=false/ /etc/default/xendomains
-#sed -i s#XENDOMAINS_SAVE=/var/lib/xen/save#XENDOMAINS_SAVE=\"\"# /etc/default/xendomains
-#dpkg-divert --divert /etc/grub.d/09_linux_xen --rename /etc/grub.d/20_linux_xen
-#echo 'GRUB_CMDLINE_XEN="dom0_mem=512M"' >> /etc/default/grub
-
-# migrate expose.ini
-#[ -f /etc/php5/conf.d/expose.ini ] && mv /etc/php5/conf.d/expose.ini \
-# /etc/php5/mods-available/local-expose.ini && php5enmod local-expose/90
-# migrate local suhosin config
-#find /etc/php5/conf.d/ -type f -name "*suhosin.ini" -exec mv '{}' \
-# /etc/php5/mods-available/local-suhosin.ini \; && php5enmod local-suhosin/90
+# Upgrade postgres
+# See also https://www.debian.org/releases/stretch/amd64/release-notes/ch-information.de.html#plperl
+if [ "$(dpkg -l | grep "postgresql-9.4" | awk {'print $2'})" = "postgresql-9.4" ]; then \
+ aptitude install postgresql-9.6 && \
+ pg_dropcluster --stop 9.6 main && \
+ /etc/init.d/postgresql stop && \
+ pg_upgradecluster -v 9.6 9.4 main && \
+ sed -i "s/^manual/auto/g" /etc/postgresql/9.6/main/start.conf && \
+ sed -i "s/^port = .*/port = 5432/" /etc/postgresql/9.6/main/postgresql.conf && \
+ sed -i "s/^shared_buffers = .*/shared_buffers = 128MB/" /etc/postgresql/9.6/main/postgresql.conf && \
+ /etc/init.d/postgresql restart; \
+fi
+pg_dropcluster 9.4 main
