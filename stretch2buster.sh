@@ -1,7 +1,7 @@
-Please also refer to http://www.debian.org/releases/stretch/releasenotes and use your brain!
+Please also refer to http://www.debian.org/releases/buster/releasenotes and use your brain!
 
 
-# upgrade to UTF-8 locales (http://www.debian.org/releases/stretch/amd64/release-notes/ap-old-stuff.en.html#switch-utf8)
+# upgrade to UTF-8 locales (http://www.debian.org/releases/buster/amd64/release-notes/ap-old-stuff.en.html#switch-utf8)
 dpkg-reconfigure locales
 
 # remove unused config file
@@ -10,10 +10,10 @@ rm -rf /etc/network/options /etc/environment
 # migrate over to systemd (before the upgrade) / you might want reboot if you install systemd
 aptitude install systemd systemd-sysv libpam-systemd
 
-# are there 3rd party packages installed? (https://www.debian.org/releases/stretch/amd64/release-notes/ch-upgrading.de.html#system-status)
+# are there 3rd party packages installed? (https://www.debian.org/releases/buster/amd64/release-notes/ch-upgrading.de.html#system-status)
 aptitude search '~i(!~ODebian)'
 
-# check for ftp protocol in sources lists (https://www.debian.org/releases/stretch/amd64/release-notes/ch-information.en.html#deprecation-of-ftp-apt-mirrors)
+# check for ftp protocol in sources lists (https://www.debian.org/releases/buster/amd64/release-notes/ch-information.en.html#deprecation-of-ftp-apt-mirrors)
 rgrep --color "deb ftp" /etc/apt/sources.list*
 
 # Transition and remove entries from older releases
@@ -22,15 +22,16 @@ sed -i /lenny/d /etc/apt/sources.list*
 sed -i /sarge/d /etc/apt/sources.list*
 sed -i /squeeze/d /etc/apt/sources.list*
 sed -i /wheezy/d /etc/apt/sources.list*
+sed -i /jessie/d /etc/apt/sources.list*
 sed -i /volatile/d /etc/apt/sources.list*
 sed -i /proposed-updates/d /etc/apt/sources.list*
 # change distro (please move 3rd party sources to /etc/apt/sources.list.d/), maybe look into http://ftp.cyconet.org/debian/sources.list.d/
-sed -i s/jessie/stretch/g /etc/apt/sources.list*
-sed -i "s/ stable/ stretch/g" /etc/apt/sources.list*
-sed -i s/jessie/stretch/g /etc/apt/preferences*
-sed -i s/jessie/stretch/g /etc/apt/sources.list.d/*jessie*
-rename s/jessie/stretch/g /etc/apt/sources.list.d/*jessie*
-rgrep --color jessie /etc/apt/sources.list*
+sed -i s/stretch/buster/g /etc/apt/sources.list*
+sed -i "s/ stable/ buster/g" /etc/apt/sources.list*
+sed -i s/stretch/buster/g /etc/apt/preferences*
+sed -i s/stretch/buster/g /etc/apt/sources.list.d/*stretch*
+rename s/stretch/buster/g /etc/apt/sources.list.d/*stretch*
+rgrep --color stretch /etc/apt/sources.list*
 apt-get update
 
 # check package status
@@ -48,7 +49,7 @@ aptitude unmarkauto $(dpkg-query -W 'linux-image-3.16*' | cut -f1)
 apt-get -o APT::Get::Trivial-Only=true dist-upgrade || df -h
 
 # record session
-script -t 2>~/upgrade-stretch.time -a ~/upgrade-stretch.script
+script -t 2>~/upgrade-buster.time -a ~/upgrade-buster.script
 
 # install our preseed so libc doesn't whine
 cat > /tmp/stretch.preseed <<EOF
@@ -79,7 +80,7 @@ sed -i s/2.debian.pool/0.de.pool/g $CFG
 # migrate unattended-upgrades config
 if [ -f /etc/apt/apt.conf.d/50unattended-upgrades.dpkg-new ]; then CFG=/etc/apt/apt.conf.d/50unattended-upgrades.dpkg-new; \
    else CFG=/etc/apt/apt.conf.d/50unattended-upgrades; fi
-sed -i s/jessie/stretch/g $CFG
+sed -i s/stretch/buster/g $CFG
 sed -i s/crontrib/contrib/g $CFG
 sed -i "s#// If automatic reboot is enabled and needed, reboot at the specific#// Automatically reboot even if there are users currently logged in.\n//Unattended-Upgrade::Automatic-Reboot-WithUsers \"true\";\n\n// If automatic reboot is enabled and needed, reboot at the specific#" $CFG
 cat >> $CFG <<EOF
@@ -165,6 +166,7 @@ apt purge $(dpkg -l | grep lenny | grep -v xen | awk '/^rc/ { print $2 }') && \
 apt purge $(dpkg -l | grep -E 'deb6|squeeze' | grep -v xen | awk '/^rc/ { print $2 }') && \
 apt purge $(dpkg -l | grep -E 'deb7|wheezy' | grep -v xen | grep -v  -E 'linux-image|mailscanner|openswan|debian-security-support' | awk '/^rc/ { print $2 }') && \
 apt purge $(dpkg -l | grep -E 'deb8|jessie' | grep -v xen | grep -v  -E 'linux-image|debian-security-support' | awk '{ print $2 }') && \
+apt purge $(dpkg -l | grep -E 'deb9|stretch' | grep -v xen | grep -v  -E 'linux-image|debian-security-support' | awk '{ print $2 }') && \
 apt -y install deborphan && apt purge $(deborphan | grep -v xen | grep -v -E 'libpam-cracklib|libapache2-mpm-itk')
 apt purge $(dpkg -l | awk '/^rc/ { print $2 }')
 
