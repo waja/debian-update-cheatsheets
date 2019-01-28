@@ -80,6 +80,11 @@ cat >> $CFG <<EOF
 
 EOF
 
+
+# Fix our ssh pub key package configuration
+[ -x /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst ] && \
+  /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst configure
+
 ## phpmyadmin
 if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
    else CFG=/etc/phpmyadmin/config.inc.php; fi
@@ -107,10 +112,6 @@ apt purge $(dpkg -l | awk '/^rc/ { print $2 }')
 reboot && sleep 180; echo u > /proc/sysrq-trigger ; sleep 2 ; echo s > /proc/sysrq-trigger ; sleep 2 ; echo b > /proc/sysrq-trigger
 
 ### not needed until now
-# Fix our ssh pub key package configuration
-[ -x /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst ] && \
-  /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst configure
-
 # Upgrade postgres
 # See also https://www.debian.org/releases/stretch/amd64/release-notes/ch-information.de.html#plperl
 if [ "$(dpkg -l | grep "postgresql-9.4" | awk {'print $2'})" = "postgresql-9.4" ]; then \
