@@ -30,6 +30,8 @@ sed -i "s/ stable/ stretch/g" /etc/apt/sources.list*
 sed -i s/jessie/stretch/g /etc/apt/preferences*
 sed -i s/jessie/stretch/g /etc/apt/sources.list.d/*jessie*
 rename s/jessie/stretch/g /etc/apt/sources.list.d/*jessie*
+sed -i 's/#\(.*stretch\-updates\)/\1/' /etc/apt/sources.list
+sed -i 's/#\(.*stretch\-backports\)/\1/' /etc/apt/sources.list.d/stretch-backports.list
 rgrep --color jessie /etc/apt/sources.list*
 apt-get update
 
