@@ -55,7 +55,8 @@ EOF
 /usr/bin/debconf-set-selections /tmp/stretch.preseed
 
 # update aptitude first
-[ "$(which aptitude)" = "/usr/bin/aptitude" ] && aptitude install aptitude
+[ "$(which aptitude)" = "/usr/bin/aptitude" ] && aptitude install aptitude && \
+[ "$(which apt)" = "/usr/bin/apt" ] && apt install apt
 
 # minimal system upgrade
 aptitude upgrade
