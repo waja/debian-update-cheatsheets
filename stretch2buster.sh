@@ -94,7 +94,6 @@ apt-get dist-upgrade
 
 # remove old squeeze packages left around (keep eyes open!)
 apt autoremove && \
-apt purge $(dpkg -l | awk '/gcc-4.9/ { print $2 }') && \
 apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner' | awk '/^i *A/ { print $3 }') && \
 apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner' | awk '/^i/ { print $2 }') && \
 apt purge $(dpkg -l | grep etch | grep -v xen | grep -v unbound | grep -v finch | awk '/^rc/ { print $2 }') && \
