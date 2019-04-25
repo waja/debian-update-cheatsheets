@@ -70,6 +70,10 @@ sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' $CFG
 if [ -f /etc/chrony/chrony.conf.new ]; then CFG=/etc/chrony/chrony.conf.new; else CFG=/etc/chrony/chrony.conf; fi
 sed -i s/2.debian.pool/0.de.pool/g $CFG
 
+# Fix our ssh pub key package configuration
+[ -x /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst ] && \
+  /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst configure
+
 # migrate unattended-upgrades config
 cp /usr/share/unattended-upgrades/50unattended-upgrades /tmp/ && \
 MAIL=$(grep ^Unattended-Upgrade::Mail /etc/apt/apt.conf.d/50unattended-upgrades | awk -F\" '{print $2}'); sed -i 's#//Unattended-Upgrade::Mail ".*";#Unattended-Upgrade::Mail "'${MAIL}'";#g' /tmp/50unattended-upgrades && \
@@ -78,10 +82,6 @@ sed -i 's#//      "origin=Debian,codename=${distro_codename}-updates"#        "o
 sed -i 's#//Unattended-Upgrade::Remove-Unused-Dependencies "false"#Unattended-Upgrade::Remove-Unused-Dependencies "true"#' /tmp/50unattended-upgrades && \
 sed -i 's#//Unattended-Upgrade::Automatic-Reboot "false"#Unattended-Upgrade::Automatic-Reboot "true"#' /tmp/50unattended-upgrades && \
 /bin/bash /usr/bin/ucf --three-way --debconf-ok /tmp/50unattended-upgrades /etc/apt/apt.conf.d/50unattended-upgrades
-
-# Fix our ssh pub key package configuration
-[ -x /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst ] && \
-  /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst configure
 
 ## phpmyadmin
 if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
