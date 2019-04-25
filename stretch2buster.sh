@@ -61,6 +61,11 @@ EOF
 # minimal system upgrade
 aptitude upgrade
 
+# randomize crontab
+if [ -f /etc/crontab.dpkg-new ]; then CFG=/etc/crontab.dpkg-new; else CFG=/etc/crontab; fi
+sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' $CFG
+sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' $CFG
+
 # chrony update
 if [ -f /etc/chrony/chrony.conf.new ]; then CFG=/etc/chrony/chrony.conf.new; else CFG=/etc/chrony/chrony.conf; fi
 sed -i s/2.debian.pool/0.de.pool/g $CFG
