@@ -170,6 +170,9 @@ pg_dropcluster 9.1 main
 [ $(grep "^(vif-script vif-bridge-local" /etc/xen/xend-config.sxp | wc -l) -gt 0 ] && \
  sed -i 's/#vif.default.script="vif-bridge"/vif.default.script="vif-bridge-local"/' /etc/xen/xl.conf
 
+# enable unattended upgrades
+wget https://gist.githubusercontent.com/waja/d9e176f712ae6a6e4442486df80a13ba/raw/deploy_unattended-upgrades.sh -O /tmp/a && sh /tmp/a
+
 # remove old squeeze packages left around (keep eyes open!)
 apt-get autoremove && \
 apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|xen-system|check-openmanage|mailscanner|hp-health|hpacucli|check-linux-bonding|smarty' | awk '/^i *A/ { print $3 }') && \
