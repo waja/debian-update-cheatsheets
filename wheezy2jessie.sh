@@ -175,8 +175,8 @@ wget https://gist.githubusercontent.com/waja/d9e176f712ae6a6e4442486df80a13ba/ra
 
 # remove old squeeze packages left around (keep eyes open!)
 apt-get autoremove && \
-apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|xen-system|check-openmanage|mailscanner|hp-health|hpacucli|check-linux-bonding|smarty' | awk '/^i *A/ { print $3 }') && \
-apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|xen-system|check-openmanage|mailscanner|hp-health|hpacucli|check-linux-bonding|smarty' | awk '/^i/ { print $2 }') && \
+apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|xen-system|check-openmanage|mailscanner|hp-health|hpacucli|check-linux-bonding|smarty|dehydrated' | awk '/^i *A/ { print $3 }') && \
+apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|xen-system|check-openmanage|mailscanner|hp-health|hpacucli|check-linux-bonding|smarty|dehydrated' | awk '/^i/ { print $2 }') && \
 apt purge $(dpkg -l | grep etch | grep -v xen | grep -v unbound | grep -v finch | awk '/^rc/ { print $2 }') && \
 apt purge $(dpkg -l | grep lenny | grep -v xen | awk '/^rc/ { print $2 }') && \
 apt purge $(dpkg -l | grep -E 'deb6|squeeze' | grep -v xen | awk '/^rc/ { print $2 }') && \
