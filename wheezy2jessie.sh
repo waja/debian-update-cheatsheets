@@ -22,6 +22,7 @@ sed -i "s/ stable/ jessie/g" /etc/apt/sources.list*
 sed -i s/wheezy/jessie/g /etc/apt/preferences*
 sed -i s/wheezy/jessie/g /etc/apt/sources.list.d/*wheezy*
 rename s/wheezy/jessie/g /etc/apt/sources.list.d/*wheezy*
+wget https://gist.githubusercontent.com/waja/d6f8715b0a187796212e012bf2289033/raw/jessie_fix_source_lists.sh -O /tmp/a && sh /tmp/a
 aptitude update
 
 # Set for example a package on hold
