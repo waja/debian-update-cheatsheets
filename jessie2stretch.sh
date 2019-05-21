@@ -124,7 +124,7 @@ apt install $(dpkg -l |grep php5 | awk '/^i/ { print $2 }' |grep -v ^php5$ |sed 
 sed -i "s/IfModule mod_php5/IfModule mod_php7/g" /etc/apache2/sites-available/*
 # are there config needed to me migrated over to php my hand?
 ls -la /etc/php5/{apache2,cli}/conf.d/
-a2dismod php5; a2enmod php7.0 && systemctl restart apache2
+a2dismod php5; a2enmod php7.0 && systemctl restart apache2; ls -la /etc/apache2/mods-enabled/*php*
 
 # Fix our ssh pub key package configuration
 [ -x /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst ] && \
