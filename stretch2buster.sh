@@ -92,6 +92,8 @@ sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][
 # full-upgrade
 apt-get dist-upgrade
 
+# Migrate (webserver) from php7.0 to php7.3
+
 # remove old squeeze packages left around (keep eyes open!)
 apt autoremove && \
 apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|phpmyadmin' | awk '/^i *A/ { print $3 }') && \
