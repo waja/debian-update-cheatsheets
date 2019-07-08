@@ -93,6 +93,16 @@ sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][
 apt-get dist-upgrade
 
 # Migrate (webserver) from php7.0 to php7.3
+apt install $(dpkg -l |grep php7.0 | awk '/^i/ { print $2 }' |grep -v ^php7.0-opcache |sed s/php7.0/php/)
+ls -la /etc/php/7.0/*/conf.d/
+# php-fpm
+tail -10 /etc/php/7.0/fpm/pool.d/www.conf
+vi /etc/php/7.3/fpm/pool.d/www.conf 
+systemctl disable php7.0-fpm && systemctl stop php7.0-fpm && systemctl restart php7.3-fpm
+# nginx
+rename s/php70/php73/g /etc/nginx/conf.d/*php70*.conf
+sed -i s/php7.0-fpm/php7.3-fpm/g /etc/nginx/conf.d/*.conf /etc/nginx/snippets/*.conf /etc/nginx/sites-available/*
+systemctl restart nginx
 
 # remove old squeeze packages left around (keep eyes open!)
 apt autoremove && \
