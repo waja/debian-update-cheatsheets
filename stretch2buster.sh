@@ -104,6 +104,9 @@ rename s/php70/php73/g /etc/nginx/conf.d/*php70*.conf
 sed -i s/php7.0-fpm/php7.3-fpm/g /etc/nginx/conf.d/*.conf /etc/nginx/snippets/*.conf /etc/nginx/sites-available/*
 systemctl restart nginx
 
+# transition docker-ce to buster package
+DOCKER_VER="$(apt-cache policy docker-ce | grep debian-buster | head -1 | awk '{print $1}')" && [ -n "${DOCKER_VER}" ] && apt install docker-ce=${DOCKER_VER} docker-ce-cli=${DOCKER_VER}
+
 # remove old squeeze packages left around (keep eyes open!)
 apt autoremove && \
 apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|phpmyadmin' | awk '/^i *A/ { print $3 }') && \
