@@ -1,5 +1,7 @@
 Please also refer to http://www.debian.org/releases/buster/releasenotes and use your brain!
 
+# Crossgrading ?!?
+[ "$(dpkg --print-architecture)" == "i386" ] && echo "How about crossgrading to amd64 as described in https://stbuehler.de/blog/article/2017/06/28/debian_stretch__upgrade_32-bit_to_64-bit.html?"
 
 # upgrade to UTF-8 locales (http://www.debian.org/releases/buster/amd64/release-notes/ap-old-stuff.en.html#switch-utf8)
 dpkg-reconfigure locales
