@@ -68,9 +68,10 @@ if [ -f /etc/crontab.dpkg-new ]; then CFG=/etc/crontab.dpkg-new; else CFG=/etc/c
 sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' $CFG
 sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' $CFG
 
-# chrony update
+# chrony update, modify the new config to our needs and place it where it is expected.
+# Keep LOCAL config if asked when upgrading 
 if [ -f /etc/chrony/chrony.conf.new ]; then CFG=/etc/chrony/chrony.conf.new; else CFG=/etc/chrony/chrony.conf; fi
-sed -i s/2.debian.pool/0.de.pool/g $CFG
+sed s/2.debian.pool/0.de.pool/g /usr/share/chrony/chrony.conf > $CFG
 
 # Fix our ssh pub key package configuration
 [ -x /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst ] && \
