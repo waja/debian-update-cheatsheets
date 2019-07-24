@@ -1,4 +1,4 @@
-Please also refer to http://www.debian.org/releases/buster/releasenotes and use your brain!
+Please also refer to http://www.debian.org/releases/buster/releasenotes and use your brain! If you can’t figure out what one of the commands below does, this is not for you. Expert mode only :)
 
 # Crossgrading ?!?
 [ "$(dpkg --print-architecture)" == "i386" ] && echo "How about crossgrading to amd64 as described in https://stbuehler.de/blog/article/2017/06/28/debian_stretch__upgrade_32-bit_to_64-bit.html?"
