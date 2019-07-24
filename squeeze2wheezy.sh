@@ -1,4 +1,4 @@
-Please also refer to http://www.debian.org/releases/wheezy/releasenotes and use your brain!
+Please also refer to http://www.debian.org/releases/wheezy/releasenotes and use your brain! If you can’t figure out what one of the commands below does, this is not for you. Expert mode only :)
 For Roundcube and Sqlite Backend see: http://wiki.debian.org/Roundcube/DeprecationOfSQLitev2
 
 
