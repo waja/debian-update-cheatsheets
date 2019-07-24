@@ -1,4 +1,4 @@
-Please also refer to http://www.debian.org/releases/lenny/releasenotes and use your brain!
+Please also refer to http://www.debian.org/releases/lenny/releasenotes and use your brain! If you can’t figure out what one of the commands below does, this is not for you. Expert mode only :)
 
 # http://www.debian.org/releases/squeeze/i386/release-notes/ch-upgrading.de.html#purge-splashy
 aptitude purge splashy
