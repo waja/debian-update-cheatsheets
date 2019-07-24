@@ -1,4 +1,4 @@
-Please also refer to http://www.debian.org/releases/jessie/releasenotes and use your brain!
+Please also refer to http://www.debian.org/releases/jessie/releasenotes and use your brain! If you can’t figure out what one of the commands below does, this is not for you. Expert mode only :)
 
 
 # upgrade to UTF-8 locales (http://www.debian.org/releases/jessie/amd64/release-notes/ap-old-stuff.en.html#switch-utf8)
