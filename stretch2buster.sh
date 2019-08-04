@@ -114,6 +114,9 @@ systemctl restart nginx
 # transition docker-ce to buster package
 DOCKER_VER="$(apt-cache policy docker-ce | grep debian-buster | head -1 | awk '{print $1}')" && [ -n "${DOCKER_VER}" ] && apt install docker-ce=${DOCKER_VER} docker-ce-cli=${DOCKER_VER}
 
+# provide /etc/dovecot/private/dovecot.key from default config to prevent failing to start dovecot
+ln -s /etc/ssl/private/ssl-cert-snakeoil.key /etc/dovecot/private/dovecot.key
+
 # Fixing systemd unit for chrooted unbound (https://bugs.debian.org/931583)
 mkdir -p /etc/systemd/system/unbound.service.d/ && cat > /etc/systemd/system/unbound.service.d/override.conf <<EOF
 [Service]
