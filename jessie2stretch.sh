@@ -117,6 +117,10 @@ mysql_upgrade -f -p
 # shorewall needs to be enabled via systemctl, /etc/default is not used by systemd
 systemctl enable shorewall
 
+# Work around changing network interface names after update (https://github.com/systemd/systemd/issues/8446)
+# Seen on VMWare guests
+CFG="/etc/default/grub"; [ $(grep GRUB_CMDLINE_LINUX ${CFG} | grep 'net.ifnames=0 biosdevname=0') ] || sed -i 's/\(GRUB_CMDLINE_LINUX=".*\)"/\1 net.ifnames=0 biosdevname=0"/' ${CFG} && sed -i 's/GRUB_CMDLINE_LINUX=" /GRUB_CMDLINE_LINUX="/' ${CFG} && update-grub
+
 # full-upgrade
 apt-get dist-upgrade
 
