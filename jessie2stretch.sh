@@ -33,6 +33,8 @@ rename s/jessie/stretch/g /etc/apt/sources.list.d/*jessie*
 sed -i 's/#\(.*stretch\-updates\)/\1/' /etc/apt/sources.list
 sed -i 's/#\(.*stretch\-backports\)/\1/' /etc/apt/sources.list.d/stretch-backports.list
 rgrep --color jessie /etc/apt/sources.list*
+# migrate omsa source
+[ -f /etc/apt/sources.list.d/stretch-dell-omsa.list ] && sed -i /openmanage/d /etc/apt/sources.list.d/stretch-dell-omsa.list && echo "deb http://linux.dell.com/repo/community/openmanage/910/stretch stretch main" >> /etc/apt/sources.list.d/stretch-dell-omsa.list
 apt-get update
 
 # check package status
