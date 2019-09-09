@@ -156,6 +156,12 @@ pg_dropcluster 9.4 main
 # Fix forbitten dovecot ssl_protocols
 sed -i "s/\!SSLv2 \!SSLv3/\!SSLv3/g" /etc/dovecot/local.conf && service dovecot restart
 
+# If you are using bind9 named and chrooted it, apparmor needs to know about it now
+echo "/var/lib/named/** rwm," >> /etc/apparmor.d/local/usr.sbin.named && apparmor_parser -r /etc/apparmor.d/usr.sbin.named && systemctl restart bind9
+
+# Install / Upgrade ruby-rmagick to have correct version  for redmine
+aptitude install ruby-rmagick apache2
+
 # xen: use our own bridge script again, when we did before
 #[ $(grep "^(vif-script vif-bridge-local" /etc/xen/xend-config.sxp | wc -l) -gt 0 ] && \
 # sed -i 's/#vif.default.script="vif-bridge"/vif.default.script="vif-bridge-local"/' /etc/xen/xl.conf
