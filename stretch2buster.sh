@@ -115,6 +115,9 @@ systemctl restart nginx
 # transition docker-ce to buster package
 DOCKER_VER="$(apt-cache policy docker-ce | grep debian-buster | head -1 | awk '{print $1}')" && [ -n "${DOCKER_VER}" ] && apt install docker-ce=${DOCKER_VER} docker-ce-cli=${DOCKER_VER}
 
+# transition icingaweb2 to buster package
+ICINGAWEB2_VER="$(apt-cache policy icingaweb2 | grep "\.buster" | head -1 | awk '{print $1}')" && [ -n "${ICINGAWEB2_VER}" ] && apt install icingaweb2=${ICINGAWEB2_VER} icingaweb2-common=${ICINGAWEB2_VER} icingaweb2-module-monitoring=${ICINGAWEB2_VER} php-icinga=${ICINGAWEB2_VER} icingacli=${ICINGAWEB2_VER}
+
 # provide /etc/dovecot/private/dovecot.key from default config to prevent failing to start dovecot
 ln -s /etc/ssl/private/ssl-cert-snakeoil.key /etc/dovecot/private/dovecot.key
 
