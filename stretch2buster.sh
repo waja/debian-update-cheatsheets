@@ -79,7 +79,7 @@ sed s/2.debian.pool/0.de.pool/g /usr/share/chrony/chrony.conf > $CFG
   /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst configure
 
 # migrate unattended-upgrades config, modify the new config to our needs and place it where it is expected.
-# Keep LOCAL config if asked when upgrading (and run this snippet afterwards, when dpkg is not blocked anymore)
+# Keep LOCAL config if asked when upgrading (and run this snippet afterwards, when dpkg is not blocked anymore and choose 'package maintainer version' then, cause this is the one we are adjusting here)
 if [ -f /etc/apt/apt.conf.d/50unattended-upgrades.ucf-old ]; then CFG=/etc/apt/apt.conf.d/50unattended-upgrades.ucf-old; else CFG=/etc/apt/apt.conf.d/50unattended-upgrades; fi && \
 cp /usr/share/unattended-upgrades/50unattended-upgrades /tmp/ && \
 MAIL=$(grep ^Unattended-Upgrade::Mail $CFG | awk -F\" '{print $2}'); sed -i 's#//Unattended-Upgrade::Mail ".*";#Unattended-Upgrade::Mail "'${MAIL}'";#g' /tmp/50unattended-upgrades && \
