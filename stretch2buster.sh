@@ -3,6 +3,9 @@ Please also refer to http://www.debian.org/releases/buster/releasenotes and use 
 # Crossgrading ?!?
 [ "$(dpkg --print-architecture)" == "i386" ] && echo "How about crossgrading to amd64 as described in https://stbuehler.de/blog/article/2017/06/28/debian_stretch__upgrade_32-bit_to_64-bit.html?"
 
+# Since running buster with older kernels may not work well (eg jessie kernels) lets see if we have a domU without own kernel
+if [ -d /sys/module/xen_netfront -a $(dpkg -l | grep grub-xen-bin | wc -l) = 0 -a $(dpkg -l | grep linux-image | wc -l) = 0 ]; then echo "Please run 'apt install grub-xen-bin grub-xen linux-image-amd64 && update-grub' to install a recent kernel and boot your domU with it next time"; fi
+
 # upgrade to UTF-8 locales (http://www.debian.org/releases/buster/amd64/release-notes/ap-old-stuff.en.html#switch-utf8)
 dpkg-reconfigure locales
 
