@@ -172,8 +172,8 @@ sed -i 's/#vif.default.script="vif-bridge"/vif.default.script="vif-bridge-local"
 # remove old squeeze packages left around (keep eyes open!)
 apt autoremove && \
 apt purge $(dpkg -l | awk '/gcc-4.9/ { print $2 }') && \
-apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|kerio|hpacucli|check-openmanage' | awk '/^i *A/ { print $3 }') && \
-apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|kerio|hpacucli|check-openmanage' | awk '/^i/ { print $2 }') && \
+apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|kerio|hpacucli|check-openmanage|hp-health' | awk '/^i *A/ { print $3 }') && \
+apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|kerio|hpacucli|check-openmanage|hp-health' | awk '/^i/ { print $2 }') && \
 apt purge $(dpkg -l | grep etch | grep -v xen | grep -v unbound | grep -v finch | awk '/^rc/ { print $2 }') && \
 apt purge $(dpkg -l | grep lenny | grep -v xen | awk '/^rc/ { print $2 }') && \
 apt purge $(dpkg -l | grep -E 'deb6|squeeze' | grep -v xen | awk '/^rc/ { print $2 }') && \
