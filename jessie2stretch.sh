@@ -125,7 +125,7 @@ CFG="/etc/default/grub"; [ $(grep GRUB_CMDLINE_LINUX ${CFG} | grep 'net.ifnames=
 apt-get dist-upgrade
 
 # Migrate php5 packages over to php meta packages
-apt install $(dpkg -l |grep php5 | awk '/^i/ { print $2 }' |grep -v ^php5$ |sed s/php5/php/)
+apt install $(dpkg -l |grep php5 | awk '/^i/ { print $2 }' |grep -v ^php5$ |sed s/php5/php/| sed s/php-sqlite/php-sqlite3/)
 # Fix IfModule mod_php5 in apache2 vHosts
 sed -i "s/IfModule mod_php5/IfModule mod_php7/g" /etc/apache2/sites-available/*
 # are there config needed to me migrated over to php my hand?
