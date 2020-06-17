@@ -136,8 +136,8 @@ systemctl daemon-reload && systemctl restart unbound
 
 # remove old squeeze packages left around (keep eyes open!)
 apt autoremove && \
-apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|phpmyadmin' | awk '/^i *A/ { print $3 }') && \
-apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|phpmyadmin' | awk '/^i/ { print $2 }') && \
+apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|phpmyadmin|check-openmanage|check-linux-bonding' | awk '/^i *A/ { print $3 }') && \
+apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|phpmyadmin|check-openmanage|check-linux-bonding' | awk '/^i/ { print $2 }') && \
 apt purge $(dpkg -l | grep etch | grep -v xen | grep -v unbound | grep -v finch | awk '/^rc/ { print $2 }') && \
 apt purge $(dpkg -l | grep lenny | grep -v xen | awk '/^rc/ { print $2 }') && \
 apt purge $(dpkg -l | grep -E 'deb6|squeeze' | grep -v xen | awk '/^rc/ { print $2 }') && \
