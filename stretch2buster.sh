@@ -109,7 +109,7 @@ apt-get dist-upgrade
 
 # Migrate (webserver) from php7.0 to php7.3
 apt install $(dpkg -l |grep php7.0 | awk '/^i/ { print $2 }' |grep -v ^php7.0-opcache |sed s/php7.0/php/)
-a2dismod php7.0; a2enmod php7.3 && systemctl restart apache2; ls -la /etc/php/7.0/*/conf.d/
+[ -L /etc/apache2/mods-enabled/mpm_prefork.load ] && a2dismod php7.0 && a2enmod php7.3 && systemctl restart apache2; ls -la /etc/php/7.0/*/conf.d/
 # php-fpm
 tail -10 /etc/php/7.0/fpm/pool.d/www.conf
 vi /etc/php/7.3/fpm/pool.d/www.conf 
