@@ -95,7 +95,7 @@ sed -i '/codename=..distro_codename.-updates/ s#^//#  #' /tmp/50unattended-upgra
 [ "$CFG" == "/etc/apt/apt.conf.d/50unattended-upgrades.ucf-old" ] && mv $CFG /etc/apt/apt.conf.d/50unattended-upgrades.ucf-save
 
 ## phpmyadmin
-if [ "$(dpkg -l | grep -c phpmyadmin)" = "1" ]; then wget https://gist.githubusercontent.com/waja/77e3d2febb0745478466344f0ce5a50e/raw/deploy_phpmyadmin_buster.sh -O /tmp/a && sh /tmp/a; fi && \
+if [ "$(dpkg -l | grep -Ec '^i.*phpmyadmin ')" = "1" ]; then wget https://gist.githubusercontent.com/waja/77e3d2febb0745478466344f0ce5a50e/raw/deploy_phpmyadmin_buster.sh -O /tmp/a && sh /tmp/a; fi && \
 if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
    else CFG=/etc/phpmyadmin/config.inc.php; fi
 sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
