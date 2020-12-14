@@ -72,7 +72,7 @@ sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' $CFG
 sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' $CFG
 
 # chrony update, modify the new config to our needs and place it where it is expected.
-# Keep LOCAL config if asked when upgrading 
+# Accept MAINTAINERS version (and run this snippet afterwards)
 if [ -f /etc/chrony/chrony.conf.new ]; then CFG=/etc/chrony/chrony.conf.new; else CFG=/etc/chrony/chrony.conf; fi
 sed s/2.debian.pool/0.de.pool/g /usr/share/chrony/chrony.conf > $CFG
 
