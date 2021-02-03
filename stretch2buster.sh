@@ -119,6 +119,13 @@ rename s/php70/php73/g /etc/nginx/conf.d/*php70*.conf
 sed -i s/php7.0-fpm/php7.3-fpm/g /etc/nginx/conf.d/*.conf /etc/nginx/snippets/*.conf /etc/nginx/sites-available/*
 systemctl restart nginx
 
+# Update old postfix configurations
+cp /etc/postfix/main.cf /tmp/main.cf && \
+if [ $(postconf -n smtpd_relay_restrictions | wc -l) -eq 0 ]; then sed -i '/^myhostname.*/i smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination' /etc/postfix/main.cf; fi && \
+if [ -z $(postconf -nh compatibility_level) ]; then sed -iE 's/^readme_directory = no/readme_directory = no\n\n# See http:\/\/www.postfix.org\/COMPATIBILITY_README.html -- default to 2 on\n# fresh installs.\ncompatibility_level = 2\n\n/' /etc/postfix/main.cf; fi && \
+diff -Nur /tmp/postfix/main.cf /etc/postfix/main.cf && \
+postfix reload
+
 # transition docker-ce to buster package
 DOCKER_VER="$(apt-cache policy docker-ce | grep debian-buster | head -1 | awk '{print $1}')" && [ -n "${DOCKER_VER}" ] && apt install docker-ce=${DOCKER_VER} docker-ce-cli=${DOCKER_VER}
 
