@@ -105,6 +105,9 @@ DOCKER_VER="$(apt-cache policy docker-ce | grep debian-bullseye | head -1 | awk 
 # transition icingaweb2 to bullseye package
 ICINGAWEB2_VER="$(apt-cache policy icingaweb2 | grep "\.bullseye" | head -1 | awk '{print $1}')" && [ -n "${ICINGAWEB2_VER}" ] && apt install icingaweb2=${ICINGAWEB2_VER} icingaweb2-common=${ICINGAWEB2_VER} icingaweb2-module-monitoring=${ICINGAWEB2_VER} php-icinga=${ICINGAWEB2_VER} icingacli=${ICINGAWEB2_VER}
 
+# Remove libgcc1 so cpp-8 can be updated
+apt remove libgcc1 && apt full-upgrade
+
 # remove old squeeze packages left around (keep eyes open!)
 apt autoremove && \
 apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|phpmyadmin|check-openmanage|check-linux-bonding' | awk '/^i *A/ { print $3 }') && \
