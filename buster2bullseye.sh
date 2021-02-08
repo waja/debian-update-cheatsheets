@@ -63,6 +63,14 @@ EOF
 [ "$(which aptitude)" = "/usr/bin/aptitude" ] && apt install aptitude && \
 [ "$(which apt)" = "/usr/bin/apt" ] && apt install apt
 
+# transition sshd port changes and adjusted authkeyfile
+if [ ! -d /etc/ssh/sshd_config.d ]; then mkdir -p /etc/ssh/sshd_config.d; fi
+if [ ! $(grep ^Port /etc/ssh/sshd_config | tee /etc/ssh/sshd_config.d/port.conf | wc -l) -gt 0 ]; then rm /etc/ssh/sshd_config.d/port.conf; fi
+if [ ! $(grep ^AuthorizedKeysFile /etc/ssh/sshd_config | tee /etc/ssh/sshd_config.d/authorizedkeysfile.conf | wc -l) -gt 0 ]; then rm /etc/ssh/sshd_config.d/authorizedkeysfile.conf ; fi
+# transition ssh changes
+if [ ! -d /etc/ssh/ssh_config.d  ]; then mkdir -p /etc/ssh/ssh_config.d; fi
+if [ ! $(grep "^ *Port" /etc/ssh/ssh_config | tee /etc/ssh/ssh_config.d/port.conf | wc -l) -gt 0 ]; then rm /etc/ssh/ssh_config.d/port.conf; fi
+
 # minimal system upgrade
 apt upgrade
 
@@ -75,11 +83,6 @@ sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' $CFG
 # Accept MAINTAINERS version (and run this snippet afterwards)
 if [ -f /etc/chrony/chrony.conf.new ]; then CFG=/etc/chrony/chrony.conf.new; else CFG=/etc/chrony/chrony.conf; fi
 sed s/2.debian.pool/0.de.pool/g /usr/share/chrony/chrony.conf > $CFG
-
-# Fix our ssh pub key package configuration
-# Accept MAINTAINERS version (and run this snippet afterwards)
-[ -x /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst ] && \
-  /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst configure
 
 # migrate unattended-upgrades config, modify the new config to our needs and place it where it is expected.
 # Keep LOCAL config if asked when upgrading (and run this snippet afterwards, when dpkg is not blocked anymore and choose 'package maintainer version' then, cause this is the one we are adjusting here)
@@ -99,14 +102,6 @@ if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/conf
    else CFG=/etc/phpmyadmin/config.inc.php; fi
 sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
 sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" $CFG
-
-# transition sshd port changes and adjusted authkeyfile
-if [ ! -d /etc/ssh/sshd_config.d ]; then mkdir -p /etc/ssh/sshd_config.d; fi
-if [ ! $(grep ^Port /etc/ssh/sshd_config | tee /etc/ssh/sshd_config.d/port.conf | wc -l) -gt 0 ]; then rm /etc/ssh/sshd_config.d/port.conf; fi
-if [ ! $(grep ^AuthorizedKeysFile /etc/ssh/sshd_config | tee /etc/ssh/sshd_config.d/authorizedkeysfile.conf | wc -l) -gt 0 ]; then rm /etc/ssh/sshd_config.d/authorizedkeysfile.conf ; fi
-# transition ssh changes
-if [ ! -d /etc/ssh/ssh_config.d  ]; then mkdir -p /etc/ssh/ssh_config.d; fi
-if [ ! $(grep "^ *Port" /etc/ssh/ssh_config | tee /etc/ssh/ssh_config.d/port.conf | wc -l) -gt 0 ]; then rm /etc/ssh/ssh_config.d/port.conf; fi
 
 # full-upgrade
 apt full-upgrade
