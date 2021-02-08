@@ -74,34 +74,8 @@ if [ ! $(grep "^ *Port" /etc/ssh/ssh_config | tee /etc/ssh/ssh_config.d/port.con
 # minimal system upgrade
 apt upgrade
 
-# randomize crontab
-if [ -f /etc/crontab.dpkg-new ]; then CFG=/etc/crontab.dpkg-new; else CFG=/etc/crontab; fi
-sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' $CFG
-sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' $CFG
-
 # chrony update, modify the new config to our needs and place it where it is expected.
-# Accept MAINTAINERS version (and run this snippet afterwards)
-if [ -f /etc/chrony/chrony.conf.new ]; then CFG=/etc/chrony/chrony.conf.new; else CFG=/etc/chrony/chrony.conf; fi
-sed s/2.debian.pool/0.de.pool/g /usr/share/chrony/chrony.conf > $CFG
-
-# migrate unattended-upgrades config, modify the new config to our needs and place it where it is expected.
-# Keep LOCAL config if asked when upgrading (and run this snippet afterwards, when dpkg is not blocked anymore and choose 'package maintainer version' then, cause this is the one we are adjusting here)
-if [ -f /etc/apt/apt.conf.d/50unattended-upgrades.ucf-old ]; then CFG=/etc/apt/apt.conf.d/50unattended-upgrades.ucf-old; else CFG=/etc/apt/apt.conf.d/50unattended-upgrades; fi && \
-cp /usr/share/unattended-upgrades/50unattended-upgrades /tmp/ && \
-MAIL=$(grep ^Unattended-Upgrade::Mail $CFG | awk -F\" '{print $2}'); sed -i 's#//Unattended-Upgrade::Mail ".*";#Unattended-Upgrade::Mail "'${MAIL}'";#g' /tmp/50unattended-upgrades && \
-TIME=$(grep ^Unattended-Upgrade::Automatic-Reboot-Time $CFG | awk -F\" '{print $2}'); if [ "${TIME}" != "" ]; then sed -i 's#//Unattended-Upgrade::Automatic-Reboot-Time "02:00"#Unattended-Upgrade::Automatic-Reboot-Time "'${TIME}'"#' /tmp/50unattended-upgrades; fi
-sed -i 's#//      "origin=Debian,codename=${distro_codename}-updates"#        "origin=Debian,codename=${distro_codename}-updates"#' /tmp/50unattended-upgrades && \
-sed -i 's#//Unattended-Upgrade::Remove-Unused-Dependencies "false"#Unattended-Upgrade::Remove-Unused-Dependencies "true"#' /tmp/50unattended-upgrades && \
-sed -i 's#//Unattended-Upgrade::Automatic-Reboot "false"#Unattended-Upgrade::Automatic-Reboot "true"#' /tmp/50unattended-upgrades && \
-sed -i '/codename=..distro_codename.-updates/ s#^//#  #' /tmp/50unattended-upgrades && \
-/bin/bash /usr/bin/ucf --three-way --debconf-ok /tmp/50unattended-upgrades /etc/apt/apt.conf.d/50unattended-upgrades && \
-[ "$CFG" == "/etc/apt/apt.conf.d/50unattended-upgrades.ucf-old" ] && mv $CFG /etc/apt/apt.conf.d/50unattended-upgrades.ucf-save
-
-## phpmyadmin
-if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
-   else CFG=/etc/phpmyadmin/config.inc.php; fi
-sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
-sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" $CFG
+if [ ! -d /etc/chrony/conf.d/ ]; then mkdir -p /etc/chrony/conf.d/; fi; echo "pool 0.de.pool.ntp.org iburst" > /etc/chrony/conf.d/pool.conf
 
 # full-upgrade
 apt full-upgrade
@@ -117,13 +91,6 @@ systemctl disable php7.3-fpm && systemctl stop php7.3-fpm && systemctl restart p
 rename s/php73/php74/g /etc/nginx/conf.d/*php73*.conf
 sed -i s/php7.3-fpm/php7.4-fpm/g /etc/nginx/conf.d/*.conf /etc/nginx/snippets/*.conf /etc/nginx/sites-available/*
 systemctl restart nginx
-
-# Update old postfix configurations
-cp /etc/postfix/main.cf /tmp/main.cf && \
-if [ $(postconf -n smtpd_relay_restrictions | wc -l) -eq 0 ]; then sed -i '/^myhostname.*/i smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination' /etc/postfix/main.cf; fi && \
-if [ -z $(postconf -nh compatibility_level) ]; then sed -iE 's/^readme_directory = no/readme_directory = no\n\n# See http:\/\/www.postfix.org\/COMPATIBILITY_README.html -- default to 2 on\n# fresh installs.\ncompatibility_level = 2\n\n/' /etc/postfix/main.cf; fi && \
-diff -Nur /tmp/postfix/main.cf /etc/postfix/main.cf && \
-postfix reload
 
 # transition docker-ce to bullseye package
 DOCKER_VER="$(apt-cache policy docker-ce | grep debian-bullseye | head -1 | awk '{print $1}')" && [ -n "${DOCKER_VER}" ] && apt install docker-ce=${DOCKER_VER} docker-ce-cli=${DOCKER_VER}
@@ -149,6 +116,38 @@ apt purge $(dpkg -l | awk '/^rc/ { print $2 }')
 reboot && sleep 180; echo u > /proc/sysrq-trigger ; sleep 2 ; echo s > /proc/sysrq-trigger ; sleep 2 ; echo b > /proc/sysrq-trigger
 
 ### not needed until now
+
+# randomize crontab
+if [ -f /etc/crontab.dpkg-new ]; then CFG=/etc/crontab.dpkg-new; else CFG=/etc/crontab; fi
+sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' $CFG
+sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' $CFG
+
+# migrate unattended-upgrades config, modify the new config to our needs and place it where it is expected.
+# Keep LOCAL config if asked when upgrading (and run this snippet afterwards, when dpkg is not blocked anymore and choose 'package maintainer version' then, cause this is the one we are adjusting here)
+if [ -f /etc/apt/apt.conf.d/50unattended-upgrades.ucf-old ]; then CFG=/etc/apt/apt.conf.d/50unattended-upgrades.ucf-old; else CFG=/etc/apt/apt.conf.d/50unattended-upgrades; fi && \
+cp /usr/share/unattended-upgrades/50unattended-upgrades /tmp/ && \
+MAIL=$(grep ^Unattended-Upgrade::Mail $CFG | awk -F\" '{print $2}'); sed -i 's#//Unattended-Upgrade::Mail ".*";#Unattended-Upgrade::Mail "'${MAIL}'";#g' /tmp/50unattended-upgrades && \
+TIME=$(grep ^Unattended-Upgrade::Automatic-Reboot-Time $CFG | awk -F\" '{print $2}'); if [ "${TIME}" != "" ]; then sed -i 's#//Unattended-Upgrade::Automatic-Reboot-Time "02:00"#Unattended-Upgrade::Automatic-Reboot-Time "'${TIME}'"#' /tmp/50unattended-upgrades; fi
+sed -i 's#//      "origin=Debian,codename=${distro_codename}-updates"#        "origin=Debian,codename=${distro_codename}-updates"#' /tmp/50unattended-upgrades && \
+sed -i 's#//Unattended-Upgrade::Remove-Unused-Dependencies "false"#Unattended-Upgrade::Remove-Unused-Dependencies "true"#' /tmp/50unattended-upgrades && \
+sed -i 's#//Unattended-Upgrade::Automatic-Reboot "false"#Unattended-Upgrade::Automatic-Reboot "true"#' /tmp/50unattended-upgrades && \
+sed -i '/codename=..distro_codename.-updates/ s#^//#  #' /tmp/50unattended-upgrades && \
+/bin/bash /usr/bin/ucf --three-way --debconf-ok /tmp/50unattended-upgrades /etc/apt/apt.conf.d/50unattended-upgrades && \
+[ "$CFG" == "/etc/apt/apt.conf.d/50unattended-upgrades.ucf-old" ] && mv $CFG /etc/apt/apt.conf.d/50unattended-upgrades.ucf-save
+
+## phpmyadmin
+if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
+   else CFG=/etc/phpmyadmin/config.inc.php; fi
+sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
+sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" $CFG
+
+# Update old postfix configurations
+cp /etc/postfix/main.cf /tmp/main.cf && \
+if [ $(postconf -n smtpd_relay_restrictions | wc -l) -eq 0 ]; then sed -i '/^myhostname.*/i smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination' /etc/postfix/main.cf; fi && \
+if [ -z $(postconf -nh compatibility_level) ]; then sed -iE 's/^readme_directory = no/readme_directory = no\n\n# See http:\/\/www.postfix.org\/COMPATIBILITY_README.html -- default to 2 on\n# fresh installs.\ncompatibility_level = 2\n\n/' /etc/postfix/main.cf; fi && \
+diff -Nur /tmp/postfix/main.cf /etc/postfix/main.cf && \
+postfix reload
+
 # Upgrade postgres
 # See also https://www.debian.org/releases/buster/amd64/release-notes/ch-information.de.html#plperl
 if [ "$(dpkg -l | grep "postgresql-9.4" | awk {'print $2'})" = "postgresql-9.4" ]; then \
