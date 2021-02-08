@@ -28,7 +28,7 @@ sed -i s/buster/bullseye/g /etc/apt/sources.list*
 sed -i "s/ stable/ bullseye/g" /etc/apt/sources.list*
 sed -i s/buster/bullseye/g /etc/apt/preferences*
 sed -i s/buster/bullseye/g /etc/apt/sources.list.d/*buster*
-rename s/buster/bullseye/g /etc/apt/sources.list.d/*buster*
+rename.ul buster bullseye /etc/apt/sources.list.d/*buster*
 rgrep --color buster /etc/apt/sources.list*
 apt-get update --allow-releaseinfo-change
 
