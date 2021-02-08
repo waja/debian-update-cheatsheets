@@ -80,6 +80,13 @@ if [ ! -d /etc/chrony/conf.d/ ]; then mkdir -p /etc/chrony/conf.d/; fi; echo "po
 # full-upgrade
 apt full-upgrade
 
+# (re)configure snmpd
+COMMUNITY="mycommunity"; \
+if [ -f /etc/snmp/snmpd.conf.dpkg-new ]; then CFG=/etc/snmp/snmpd.conf.dpkg-new; \
+   else CFG=/etc/snmp/snmpd.conf; fi
+sed -i "s/^agentaddress.*/agentaddress udp:161,udp6:[::1]:161/g" $CFG
+sed -i "s/public default/$COMMUNITY default/g" $CFG
+
 # Migrate (webserver) from php7.3 to php7.4
 apt install $(dpkg -l |grep php7.3 | awk '/^i/ { print $2 }' |grep -v ^php7.3-opcache |sed s/php7.3/php/)
 [ -L /etc/apache2/mods-enabled/mpm_prefork.load ] && a2dismod php7.3 && a2enmod php7.4 && systemctl restart apache2; ls -la /etc/php/7.3/*/conf.d/
