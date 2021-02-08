@@ -30,7 +30,7 @@ sed -i s/buster/bullseye/g /etc/apt/preferences*
 sed -i s/buster/bullseye/g /etc/apt/sources.list.d/*buster*
 rename.ul buster bullseye /etc/apt/sources.list.d/*buster*
 rgrep --color buster /etc/apt/sources.list*
-apt-get update --allow-releaseinfo-change
+apt update
 
 # check package status
 dpkg --audit
@@ -57,12 +57,12 @@ libc6 libraries/restart-without-asking boolean true
 EOF
 /usr/bin/debconf-set-selections /tmp/buster.preseed
 
-# update aptitude first
-[ "$(which aptitude)" = "/usr/bin/aptitude" ] && aptitude install aptitude && \
+# update aptitude and apt first
+[ "$(which aptitude)" = "/usr/bin/aptitude" ] && apt install aptitude && \
 [ "$(which apt)" = "/usr/bin/apt" ] && apt install apt
 
 # minimal system upgrade
-aptitude upgrade
+apt upgrade
 
 # randomize crontab
 if [ -f /etc/crontab.dpkg-new ]; then CFG=/etc/crontab.dpkg-new; else CFG=/etc/crontab; fi
@@ -102,7 +102,7 @@ sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][
 sed -i "s/^#Port 22/Port 1234/" /etc/ssh/sshd_config && /etc/init.d/ssh restart
 
 # full-upgrade
-apt-get dist-upgrade
+apt dist-upgrade
 
 # Migrate (webserver) from php7.3 to php7.4
 apt install $(dpkg -l |grep php7.3 | awk '/^i/ { print $2 }' |grep -v ^php7.3-opcache |sed s/php7.3/php/)
@@ -150,7 +150,7 @@ reboot && sleep 180; echo u > /proc/sysrq-trigger ; sleep 2 ; echo s > /proc/sys
 # Upgrade postgres
 # See also https://www.debian.org/releases/buster/amd64/release-notes/ch-information.de.html#plperl
 if [ "$(dpkg -l | grep "postgresql-9.4" | awk {'print $2'})" = "postgresql-9.4" ]; then \
- aptitude install postgresql-9.6 && \
+ apt install postgresql-9.6 && \
  pg_dropcluster --stop 9.6 main && \
  /etc/init.d/postgresql stop && \
  pg_upgradecluster -v 9.6 9.4 main && \
