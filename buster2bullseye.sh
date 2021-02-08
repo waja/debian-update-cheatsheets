@@ -102,7 +102,7 @@ sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][
 sed -i "s/^#Port 22/Port 1234/" /etc/ssh/sshd_config && /etc/init.d/ssh restart
 
 # full-upgrade
-apt dist-upgrade
+apt full-upgrade
 
 # Migrate (webserver) from php7.3 to php7.4
 apt install $(dpkg -l |grep php7.3 | awk '/^i/ { print $2 }' |grep -v ^php7.3-opcache |sed s/php7.3/php/)
