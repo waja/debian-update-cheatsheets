@@ -36,6 +36,7 @@ apt-get update
 dpkg --audit
 aptitude search "~ahold" | grep "^.h"
 dpkg --get-selections | grep hold
+dpkg --get-selections "*" > ~/curr-pkgs.txt
  
 # unmark packages auto
 aptitude unmarkauto vim net-tools && \
