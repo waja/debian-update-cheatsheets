@@ -98,8 +98,10 @@ if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/conf
 sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
 sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" $CFG
 
-# transition sshd port changes
-sed -i "s/^#Port 22/Port 1234/" /etc/ssh/sshd_config && /etc/init.d/ssh restart
+# transition sshd port changes and adjusted authkeyfile
+if [ ! -d /etc/ssh/sshd_config.d ]; then mkdir -p /etc/ssh/sshd_config.d; fi
+if [ ! $(grep ^Port /etc/ssh/sshd_config | tee /etc/ssh/sshd_config.d/port.conf | wc -l) -gt 0 ]; then rm /etc/ssh/sshd_config.d/port.conf; fi
+if [ ! $(grep ^AuthorizedKeysFile /etc/ssh/sshd_config | tee /etc/ssh/sshd_config.d/authorizedkeysfile.conf | wc -l) -gt 0 ]; then rm /etc/ssh/sshd_config.d/authorizedkeysfile.conf ; fi
 
 # full-upgrade
 apt full-upgrade
