@@ -30,7 +30,7 @@ sed -i s/buster/bullseye/g /etc/apt/preferences*
 sed -i s/buster/bullseye/g /etc/apt/sources.list.d/*buster*
 rename s/buster/bullseye/g /etc/apt/sources.list.d/*buster*
 rgrep --color buster /etc/apt/sources.list*
-apt-get update
+apt-get update --allow-releaseinfo-change
 
 # check package status
 dpkg --audit
