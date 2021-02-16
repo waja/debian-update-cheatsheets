@@ -129,7 +129,7 @@ systemctl restart nginx
 cp /etc/postfix/main.cf /tmp/main.cf && \
 if [ $(postconf -n smtpd_relay_restrictions | wc -l) -eq 0 ]; then sed -i '/^myhostname.*/i smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination' /etc/postfix/main.cf; fi && \
 if [ -z $(postconf -nh compatibility_level) ]; then sed -iE 's/^readme_directory = no/readme_directory = no\n\n# See http:\/\/www.postfix.org\/COMPATIBILITY_README.html -- default to 2 on\n# fresh installs.\ncompatibility_level = 2\n\n/' /etc/postfix/main.cf; fi && \
-diff -Nur /tmp/postfix/main.cf /etc/postfix/main.cf && \
+diff -Nur /tmp/main.cf /etc/postfix/main.cf && \
 postfix reload
 
 # transition docker-ce to buster package
