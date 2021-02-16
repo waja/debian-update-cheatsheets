@@ -46,6 +46,9 @@ aptitude unmarkauto $(dpkg-query -W 'linux-image-4.19.0*' | cut -f1)
 # have a look into required and free disk space
 apt-get -o APT::Get::Trivial-Only=true dist-upgrade || df -h
 
+# purge already remove packages
+apt purge $(dpkg -l | awk '/^rc/ { print $2 }')
+
 # check for a linux-image meta package
 dpkg -l "linux-image*" | grep ^ii | grep -i meta || echo "Please have a look into https://www.debian.org/releases/bullseye/amd64/release-notes/ch-upgrading.en.html#kernel-metapackage!"
 # record session
