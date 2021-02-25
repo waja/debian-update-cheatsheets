@@ -148,6 +148,9 @@ BindPaths=/run/systemd/notify:/var/lib/unbound/run/systemd/notify
 EOF
 systemctl daemon-reload && systemctl restart unbound
 
+# Apply pdns-backend database migration
+source /etc/default/config-mysql-server-auth; mysql -u root --password=${MYSQLPW} $(grep ^gmysql-dbname /etc/powerdns/pdns.d/pdns.local.gmysql.conf | cut -d= -f 2) < /usr/share/pdns-backend-mysql/schema/3.4.0_to_4.1.0_schema.mysql.sql
+
 # remove old squeeze packages left around (keep eyes open!)
 apt autoremove && \
 apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|phpmyadmin|check-openmanage|check-linux-bonding' | awk '/^i *A/ { print $3 }') && \
