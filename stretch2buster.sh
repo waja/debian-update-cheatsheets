@@ -82,6 +82,14 @@ sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' $CFG
 if [ -f /etc/chrony/chrony.conf.new ]; then CFG=/etc/chrony/chrony.conf.new; else CFG=/etc/chrony/chrony.conf; fi
 sed s/2.debian.pool/0.de.pool/g /usr/share/chrony/chrony.conf > $CFG
 
+# transition sshd port changes
+if [ -f /etc/ssh/sshd_config.dpkg-new ]; then
+	SSH_PORT=$(grep "^ *Port" /etc/ssh/sshd_config | cut -d' ' -f2)
+	if [ -n ${SSH_PORT} ]; then
+		sed -i "s/^#Port 22/Port ${SSH_PORT}/" /etc/ssh/sshd_config && /etc/init.d/ssh restart
+	fi
+fi
+
 # Fix our ssh pub key package configuration
 # Accept MAINTAINERS version (and run this snippet afterwards)
 [ -x /var/lib/dpkg/info/config-openssh-server-authorizedkeys-core.postinst ] && \
@@ -106,9 +114,6 @@ if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/conf
    else CFG=/etc/phpmyadmin/config.inc.php; fi
 sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
 sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" $CFG
-
-# transition sshd port changes
-sed -i "s/^#Port 22/Port 1234/" /etc/ssh/sshd_config && /etc/init.d/ssh restart
 
 # full-upgrade
 apt-get dist-upgrade
