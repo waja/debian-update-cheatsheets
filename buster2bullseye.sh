@@ -86,7 +86,7 @@ COMMUNITY="$(grep ^rocommunity /etc/snmp/snmpd.conf | cut -d" " -f2)"; \
 if [ -f /etc/snmp/snmpd.conf.dpkg-new ]; then CFG=/etc/snmp/snmpd.conf.dpkg-new; \
    else CFG=/etc/snmp/snmpd.conf; fi
 sed -i "s/^agentaddress.*/agentaddress udp:161,udp6:[::1]:161/g" $CFG
-sed -i "s/public default/$COMMUNITY default/g" $CFG
+sed -i "s/public default.*/$COMMUNITY default/g" $CFG
 grep ^extend /etc/snmp/snmpd.conf >> $CFG
 
 # migrate unattended-upgrades config, modify the new config to our needs and place it where it is expected.
