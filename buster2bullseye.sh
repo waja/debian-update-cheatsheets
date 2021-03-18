@@ -84,11 +84,12 @@ if [ ! -d /etc/chrony/conf.d/ ]; then mkdir -p /etc/chrony/conf.d/; fi; echo "po
 apt full-upgrade
 
 # (re)configure snmpd
-COMMUNITY="mycommunity"; \
+COMMUNITY="$(grep ^rocommunity /etc/snmp/snmpd.conf | cut -d" " -f2)"; \
 if [ -f /etc/snmp/snmpd.conf.dpkg-new ]; then CFG=/etc/snmp/snmpd.conf.dpkg-new; \
    else CFG=/etc/snmp/snmpd.conf; fi
 sed -i "s/^agentaddress.*/agentaddress udp:161,udp6:[::1]:161/g" $CFG
 sed -i "s/public default/$COMMUNITY default/g" $CFG
+grep ^extend /etc/snmp/snmpd.conf >> $CFG
 
 # Migrate (webserver) from php7.3 to php7.4
 apt install $(dpkg -l |grep php7.3 | awk '/^i/ { print $2 }' |grep -v ^php7.3-opcache |sed s/php7.3/php/)
