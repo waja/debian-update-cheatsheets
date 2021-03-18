@@ -80,6 +80,14 @@ apt upgrade
 # chrony update, modify the new config to our needs and place it where it is expected.
 if [ ! -d /etc/chrony/conf.d/ ]; then mkdir -p /etc/chrony/conf.d/; fi; echo "pool 0.de.pool.ntp.org iburst" > /etc/chrony/conf.d/pool.conf
 
+# (re)configure snmpd
+COMMUNITY="$(grep ^rocommunity /etc/snmp/snmpd.conf | cut -d" " -f2)"; \
+if [ -f /etc/snmp/snmpd.conf.dpkg-new ]; then CFG=/etc/snmp/snmpd.conf.dpkg-new; \
+   else CFG=/etc/snmp/snmpd.conf; fi
+sed -i "s/^agentaddress.*/agentaddress udp:161,udp6:[::1]:161/g" $CFG
+sed -i "s/public default/$COMMUNITY default/g" $CFG
+grep ^extend /etc/snmp/snmpd.conf >> $CFG
+
 # migrate unattended-upgrades config, modify the new config to our needs and place it where it is expected.
 # Keep LOCAL config if asked when upgrading (and run this snippet afterwards, when dpkg is not blocked anymore and choose 'package maintainer version' then, cause this is the one we are adjusting here)
 if [ -f /etc/apt/apt.conf.d/50unattended-upgrades.ucf-old ]; then CFG=/etc/apt/apt.conf.d/50unattended-upgrades.ucf-old; else CFG=/etc/apt/apt.conf.d/50unattended-upgrades; fi && \
@@ -96,14 +104,6 @@ sed -i 's#//Unattended-Upgrade::MailReport "on-change"#Unattended-Upgrade::MailR
 
 # full-upgrade
 apt full-upgrade
-
-# (re)configure snmpd
-COMMUNITY="$(grep ^rocommunity /etc/snmp/snmpd.conf | cut -d" " -f2)"; \
-if [ -f /etc/snmp/snmpd.conf.dpkg-new ]; then CFG=/etc/snmp/snmpd.conf.dpkg-new; \
-   else CFG=/etc/snmp/snmpd.conf; fi
-sed -i "s/^agentaddress.*/agentaddress udp:161,udp6:[::1]:161/g" $CFG
-sed -i "s/public default/$COMMUNITY default/g" $CFG
-grep ^extend /etc/snmp/snmpd.conf >> $CFG
 
 # Migrate (webserver) from php7.3 to php7.4
 apt install $(dpkg -l |grep php7.3 | awk '/^i/ { print $2 }' |grep -v ^php7.3-opcache |sed s/php7.3/php/)
