@@ -80,6 +80,20 @@ apt upgrade
 # chrony update, modify the new config to our needs and place it where it is expected.
 if [ ! -d /etc/chrony/conf.d/ ]; then mkdir -p /etc/chrony/conf.d/; fi; echo "pool 0.de.pool.ntp.org iburst" > /etc/chrony/conf.d/pool.conf
 
+# migrate unattended-upgrades config, modify the new config to our needs and place it where it is expected.
+# Keep LOCAL config if asked when upgrading (and run this snippet afterwards, when dpkg is not blocked anymore and choose 'package maintainer version' then, cause this is the one we are adjusting here)
+if [ -f /etc/apt/apt.conf.d/50unattended-upgrades.ucf-old ]; then CFG=/etc/apt/apt.conf.d/50unattended-upgrades.ucf-old; else CFG=/etc/apt/apt.conf.d/50unattended-upgrades; fi && \
+cp /usr/share/unattended-upgrades/50unattended-upgrades /tmp/ && \
+MAIL=$(grep ^Unattended-Upgrade::Mail $CFG | awk -F\" '{print $2}'); sed -i 's#//Unattended-Upgrade::Mail ".*";#Unattended-Upgrade::Mail "'${MAIL}'";#g' /tmp/50unattended-upgrades && \
+TIME=$(grep ^Unattended-Upgrade::Automatic-Reboot-Time $CFG | awk -F\" '{print $2}'); if [ "${TIME}" != "" ]; then sed -i 's#//Unattended-Upgrade::Automatic-Reboot-Time "02:00"#Unattended-Upgrade::Automatic-Reboot-Time "'${TIME}'"#' /tmp/50unattended-upgrades; fi
+sed -i 's#//      "origin=Debian,codename=${distro_codename}-updates"#        "origin=Debian,codename=${distro_codename}-updates"#' /tmp/50unattended-upgrades && \
+sed -i 's#//Unattended-Upgrade::Remove-Unused-Dependencies "false"#Unattended-Upgrade::Remove-Unused-Dependencies "true"#' /tmp/50unattended-upgrades && \
+sed -i 's#//Unattended-Upgrade::Automatic-Reboot "false"#Unattended-Upgrade::Automatic-Reboot "true"#' /tmp/50unattended-upgrades && \
+sed -i '/codename=..distro_codename.-updates/ s#^//#  #' /tmp/50unattended-upgrades && \
+sed -i 's#//Unattended-Upgrade::MailReport "on-change"#Unattended-Upgrade::MailReport "always"#' /tmp/50unattended-upgrades && \
+/bin/bash /usr/bin/ucf --three-way --debconf-ok /tmp/50unattended-upgrades /etc/apt/apt.conf.d/50unattended-upgrades && \
+[ "$CFG" == "/etc/apt/apt.conf.d/50unattended-upgrades.ucf-old" ] && mv $CFG /etc/apt/apt.conf.d/50unattended-upgrades.ucf-save
+
 # full-upgrade
 apt full-upgrade
 
@@ -135,19 +149,6 @@ reboot && sleep 180; echo u > /proc/sysrq-trigger ; sleep 2 ; echo s > /proc/sys
 if [ -f /etc/crontab.dpkg-new ]; then CFG=/etc/crontab.dpkg-new; else CFG=/etc/crontab; fi
 sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' $CFG
 sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' $CFG
-
-# migrate unattended-upgrades config, modify the new config to our needs and place it where it is expected.
-# Keep LOCAL config if asked when upgrading (and run this snippet afterwards, when dpkg is not blocked anymore and choose 'package maintainer version' then, cause this is the one we are adjusting here)
-if [ -f /etc/apt/apt.conf.d/50unattended-upgrades.ucf-old ]; then CFG=/etc/apt/apt.conf.d/50unattended-upgrades.ucf-old; else CFG=/etc/apt/apt.conf.d/50unattended-upgrades; fi && \
-cp /usr/share/unattended-upgrades/50unattended-upgrades /tmp/ && \
-MAIL=$(grep ^Unattended-Upgrade::Mail $CFG | awk -F\" '{print $2}'); sed -i 's#//Unattended-Upgrade::Mail ".*";#Unattended-Upgrade::Mail "'${MAIL}'";#g' /tmp/50unattended-upgrades && \
-TIME=$(grep ^Unattended-Upgrade::Automatic-Reboot-Time $CFG | awk -F\" '{print $2}'); if [ "${TIME}" != "" ]; then sed -i 's#//Unattended-Upgrade::Automatic-Reboot-Time "02:00"#Unattended-Upgrade::Automatic-Reboot-Time "'${TIME}'"#' /tmp/50unattended-upgrades; fi
-sed -i 's#//      "origin=Debian,codename=${distro_codename}-updates"#        "origin=Debian,codename=${distro_codename}-updates"#' /tmp/50unattended-upgrades && \
-sed -i 's#//Unattended-Upgrade::Remove-Unused-Dependencies "false"#Unattended-Upgrade::Remove-Unused-Dependencies "true"#' /tmp/50unattended-upgrades && \
-sed -i 's#//Unattended-Upgrade::Automatic-Reboot "false"#Unattended-Upgrade::Automatic-Reboot "true"#' /tmp/50unattended-upgrades && \
-sed -i '/codename=..distro_codename.-updates/ s#^//#  #' /tmp/50unattended-upgrades && \
-/bin/bash /usr/bin/ucf --three-way --debconf-ok /tmp/50unattended-upgrades /etc/apt/apt.conf.d/50unattended-upgrades && \
-[ "$CFG" == "/etc/apt/apt.conf.d/50unattended-upgrades.ucf-old" ] && mv $CFG /etc/apt/apt.conf.d/50unattended-upgrades.ucf-save
 
 ## phpmyadmin
 if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
