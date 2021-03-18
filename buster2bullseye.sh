@@ -62,17 +62,17 @@ libc6 libraries/restart-without-asking boolean true
 EOF
 /usr/bin/debconf-set-selections /tmp/buster.preseed
 
-# update aptitude and apt first
-[ "$(which aptitude)" = "/usr/bin/aptitude" ] && apt install aptitude && \
-[ "$(which apt)" = "/usr/bin/apt" ] && apt install apt
-
-# transition sshd port changes and adjusted authkeyfile
+# transition sshd port changes and adjusted authkeyfile before starting the update
 if [ ! -d /etc/ssh/sshd_config.d ]; then mkdir -p /etc/ssh/sshd_config.d; fi
 if [ ! $(grep ^Port /etc/ssh/sshd_config | tee /etc/ssh/sshd_config.d/port.conf | wc -l) -gt 0 ]; then rm /etc/ssh/sshd_config.d/port.conf; fi
 if [ ! $(grep ^AuthorizedKeysFile /etc/ssh/sshd_config | tee /etc/ssh/sshd_config.d/authorizedkeysfile.conf | wc -l) -gt 0 ]; then rm /etc/ssh/sshd_config.d/authorizedkeysfile.conf ; fi
 # transition ssh changes
 if [ ! -d /etc/ssh/ssh_config.d  ]; then mkdir -p /etc/ssh/ssh_config.d; fi
 if [ ! $(grep "^ *Port" /etc/ssh/ssh_config | tee /etc/ssh/ssh_config.d/port.conf | wc -l) -gt 0 ]; then rm /etc/ssh/ssh_config.d/port.conf; fi
+
+# update aptitude and apt first
+[ "$(which aptitude)" = "/usr/bin/aptitude" ] && apt install aptitude && \
+[ "$(which apt)" = "/usr/bin/apt" ] && apt install apt
 
 # minimal system upgrade
 apt upgrade
