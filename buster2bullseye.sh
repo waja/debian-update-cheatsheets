@@ -41,6 +41,7 @@ dpkg --get-selections "*" > ~/curr-pkgs.txt
 # unmark packages auto
 aptitude unmarkauto vim net-tools && \
 aptitude unmarkauto libapache2-mpm-itk && \
+aptitude unmarkauto monitoring-plugins-contrib && \
 aptitude unmarkauto $(dpkg-query -W 'linux-image-4.19.0*' | cut -f1)
  
 # have a look into required and free disk space
