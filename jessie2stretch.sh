@@ -113,7 +113,7 @@ sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][
 # Move configs from MySQl to MariaDB config location (e.g.)
 mv /etc/mysql/conf.d/bind.cnf /etc/mysql/mariadb.conf.d/90-bind.cnf
 # In some cases the upgrade of databases seems not work out (problems with mysql.proc)
-mysql_upgrade -f -p
+source /etc/default/config-mysql-server-auth; mysql_upgrade -f --password=${MYSQLPW}
 # have look into https://mariadb.com/kb/en/the-mariadb-library/moving-from-mysql-to-mariadb-in-debian-9/#configuration-options-for-advanced-database-users
 
 # maybe we want to change some shorewall config stuff again
