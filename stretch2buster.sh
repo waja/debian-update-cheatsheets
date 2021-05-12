@@ -83,11 +83,9 @@ if [ -f /etc/chrony/chrony.conf.new ]; then CFG=/etc/chrony/chrony.conf.new; els
 sed s/2.debian.pool/0.de.pool/g /usr/share/chrony/chrony.conf > $CFG
 
 # transition sshd port changes
-if [ -f /etc/ssh/sshd_config.dpkg-new ]; then
-	SSH_PORT=$(grep "^ *Port" /etc/ssh/sshd_config | cut -d' ' -f2)
-	if [ -n ${SSH_PORT} ]; then
-		sed -i "s/^#Port 22/Port ${SSH_PORT}/" /etc/ssh/sshd_config && /etc/init.d/ssh restart
-	fi
+SSH_PORT=$(grep "^ *Port" /etc/ssh/sshd_config | cut -d' ' -f2)
+if [ -n ${SSH_PORT} ]; then
+	sed -i "s/^#Port 22/Port ${SSH_PORT}/" /tmp/file2mIMWI && /etc/init.d/ssh restart
 fi
 
 # Fix our ssh pub key package configuration
