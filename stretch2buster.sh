@@ -106,13 +106,6 @@ sed -i '/codename=..distro_codename.-updates/ s#^//#  #' /tmp/50unattended-upgra
 /bin/bash /usr/bin/ucf --three-way --debconf-ok /tmp/50unattended-upgrades /etc/apt/apt.conf.d/50unattended-upgrades && \
 [ "$CFG" == "/etc/apt/apt.conf.d/50unattended-upgrades.ucf-old" ] && mv $CFG /etc/apt/apt.conf.d/50unattended-upgrades.ucf-save
 
-## phpmyadmin
-if [ "$(dpkg -l | grep -Ec '^i.*phpmyadmin ')" = "1" ]; then wget https://gist.githubusercontent.com/waja/77e3d2febb0745478466344f0ce5a50e/raw/deploy_phpmyadmin_buster.sh -O /tmp/a && sh /tmp/a; fi && \
-if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
-   else CFG=/etc/phpmyadmin/config.inc.php; fi
-sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
-sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" $CFG
-
 # full-upgrade
 apt-get dist-upgrade
 
@@ -127,6 +120,13 @@ systemctl disable php7.0-fpm && systemctl stop php7.0-fpm && systemctl restart p
 rename s/php70/php73/g /etc/nginx/conf.d/*php70*.conf
 sed -i s/php7.0-fpm/php7.3-fpm/g /etc/nginx/conf.d/*.conf /etc/nginx/snippets/*.conf /etc/nginx/sites-available/*
 systemctl restart nginx
+
+# phpmyadmin
+if [ "$(dpkg -l | grep -Ec '^i.*phpmyadmin ')" = "1" ]; then wget https://gist.githubusercontent.com/waja/77e3d2febb0745478466344f0ce5a50e/raw/deploy_phpmyadmin_buster.sh -O /tmp/a && sh /tmp/a; fi && \
+if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
+   else CFG=/etc/phpmyadmin/config.inc.php; fi
+sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
+sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" $CFG
 
 # Update old postfix configurations
 cp /etc/postfix/main.cf /tmp/main.cf && \
