@@ -28,6 +28,8 @@ sed -i s/buster/bullseye/g /etc/apt/sources.list*
 sed -i "s/ stable/ bullseye/g" /etc/apt/sources.list*
 sed -i s/buster/bullseye/g /etc/apt/preferences*
 sed -i s/buster/bullseye/g /etc/apt/sources.list.d/*buster*
+# Fix secuity suite (https://www.debian.org/releases/bullseye/amd64/release-notes/ch-information#security-archive)
+sed -i "s/bullseye\/updates/bullseye-security/" /etc/apt/sources.list*
 rename.ul buster bullseye /etc/apt/sources.list.d/*buster*
 rgrep --color buster /etc/apt/sources.list*
 apt update
