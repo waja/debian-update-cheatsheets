@@ -78,7 +78,7 @@ if [ ! $(grep "^ *Port" /etc/ssh/ssh_config | tee /etc/ssh/ssh_config.d/port.con
 [ "$(which apt)" = "/usr/bin/apt" ] && apt install apt
 
 # minimal system upgrade
-apt upgrade
+apt upgrade --without-new-pkgs
 
 # chrony update, modify the new config to our needs and place it where it is expected.
 if [ ! -d /etc/chrony/conf.d/ ]; then mkdir -p /etc/chrony/conf.d/; fi; echo "pool 0.de.pool.ntp.org iburst" > /etc/chrony/conf.d/pool.conf
