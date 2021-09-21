@@ -80,6 +80,10 @@ if [ ! $(grep "^ *Port" /etc/ssh/ssh_config | tee /etc/ssh/ssh_config.d/port.con
 # minimal system upgrade
 apt upgrade --without-new-pkgs
 
+# (re)enable wheel
+if [ -f /etc/pam.d/su.dpkg-new ]; then CFG=/etc/pam.d/su.dpkg-new; else CFG=/etc/pam.d/su; fi
+sed -i "s/# auth       required   pam_wheel.so/auth       required   pam_wheel.so/" $CFG
+
 # chrony update, modify the new config to our needs and place it where it is expected.
 if [ ! -d /etc/chrony/conf.d/ ]; then mkdir -p /etc/chrony/conf.d/; fi; echo "pool 0.de.pool.ntp.org iburst" > /etc/chrony/conf.d/pool.conf
 
