@@ -87,6 +87,9 @@ sed -i "s/# auth       required   pam_wheel.so/auth       required   pam_wheel.s
 # chrony update, modify the new config to our needs and place it where it is expected.
 if [ ! -d /etc/chrony/conf.d/ ]; then mkdir -p /etc/chrony/conf.d/; fi; echo "pool 0.de.pool.ntp.org iburst" > /etc/chrony/conf.d/pool.conf
 
+# full-upgrade
+apt full-upgrade
+
 # (re)configure snmpd
 COMMUNITY="$(grep ^rocommunity /etc/snmp/snmpd.conf | cut -d" " -f2)"; \
 if [ -f /etc/snmp/snmpd.conf.dpkg-new ]; then CFG=/etc/snmp/snmpd.conf.dpkg-new; \
@@ -108,9 +111,6 @@ sed -i '/codename=..distro_codename.-updates/ s#^//#  #' /tmp/50unattended-upgra
 sed -i 's#//Unattended-Upgrade::MailReport "on-change"#Unattended-Upgrade::MailReport "on-change"#' /tmp/50unattended-upgrades && \
 /bin/bash /usr/bin/ucf --three-way --debconf-ok /tmp/50unattended-upgrades /etc/apt/apt.conf.d/50unattended-upgrades && \
 [ "$CFG" == "/etc/apt/apt.conf.d/50unattended-upgrades.ucf-old" ] && mv $CFG /etc/apt/apt.conf.d/50unattended-upgrades.ucf-save
-
-# full-upgrade
-apt full-upgrade
 
 # Migrate (webserver) from php7.3 to php7.4
 apt install $(dpkg -l |grep php7.3 | awk '/^i/ { print $2 }' |grep -v ^php7.3-opcache |sed s/php7.3/php/)
