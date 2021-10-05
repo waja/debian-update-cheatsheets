@@ -98,6 +98,10 @@ sed -i "s/^agentaddress.*/agentaddress udp:161,udp6:[::1]:161/g" $CFG
 sed -i "s/public default.*/$COMMUNITY default/g" $CFG
 grep ^extend /etc/snmp/snmpd.conf >> $CFG
 
+# reintroduce our own bridge script in xen
+SCRIPT="$(grep ^vif.default.script /etc/xen/xl.conf)"; \
+if [ ${SCRIPT} ]; then sed -i "s/#\?vif.default.script=.*/$SCRIPT/g" /etc/xen/xl.conf.dpkg-new; fi
+
 # migrate unattended-upgrades config, modify the new config to our needs and place it where it is expected.
 # Keep LOCAL config if asked when upgrading (and run this snippet afterwards, when dpkg is not blocked anymore and choose 'package maintainer version' then, cause this is the one we are adjusting here)
 if [ -f /etc/apt/apt.conf.d/50unattended-upgrades.ucf-old ]; then CFG=/etc/apt/apt.conf.d/50unattended-upgrades.ucf-old; else CFG=/etc/apt/apt.conf.d/50unattended-upgrades; fi && \
