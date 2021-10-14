@@ -134,6 +134,12 @@ DOCKER_VER="$(apt-cache policy docker-ce | grep debian-bullseye | head -1 | awk 
 # transition icingaweb2 to bullseye package
 ICINGAWEB2_VER="$(apt-cache policy icingaweb2 | grep "\.bullseye" | head -1 | awk '{print $1}')" && [ -n "${ICINGAWEB2_VER}" ] && apt install icingaweb2=${ICINGAWEB2_VER} icingaweb2-common=${ICINGAWEB2_VER} icingaweb2-module-monitoring=${ICINGAWEB2_VER} php-icinga=${ICINGAWEB2_VER} icingacli=${ICINGAWEB2_VER}
 
+# transition icinga2 to bullseye packages
+apt-get install $(dpkg -l | grep icinga2 | grep -v common | awk '{print $2"/icinga-bullseye"}')
+
+# Mitigate #991235 (fail2ban and bsd-mailx)
+if [ $(dpkg -l | grep -cE "(bsd-mailx|fail2ban)") -ge 2 ]; then sed -i "s/mail -E 'set escape'/mail/g" /etc/fail2ban/action.d/mail*.conf && service fail2ban reload; fi
+
 # Remove libgcc1 so cpp-8 can be updated
 apt remove libgcc1 && apt full-upgrade
 
