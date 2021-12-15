@@ -65,6 +65,9 @@ libc6 libraries/restart-without-asking boolean true
 EOF
 /usr/bin/debconf-set-selections /tmp/stretch.preseed
 
+# Do we have postgresql, we need to reindex, see https://www.debian.org/releases/buster/amd64/release-notes/ch-information.en.html#postgresql-reindex
+[ $(dpkg -l | grep -c postgresql-9.6) -ge 1 ] && su - postgres -c 'reindexdb --all'
+
 # update aptitude first
 [ "$(which aptitude)" = "/usr/bin/aptitude" ] && aptitude install aptitude && \
 [ "$(which apt)" = "/usr/bin/apt" ] && apt install apt
