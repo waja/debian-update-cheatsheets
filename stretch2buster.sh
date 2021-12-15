@@ -65,12 +65,12 @@ libc6 libraries/restart-without-asking boolean true
 EOF
 /usr/bin/debconf-set-selections /tmp/stretch.preseed
 
-# Do we have postgresql, we need to reindex, see https://www.debian.org/releases/buster/amd64/release-notes/ch-information.en.html#postgresql-reindex
-[ $(dpkg -l | grep -c postgresql-9.6) -ge 1 ] && su - postgres -c 'reindexdb --all'
-
 # update aptitude first
 [ "$(which aptitude)" = "/usr/bin/aptitude" ] && aptitude install aptitude && \
 [ "$(which apt)" = "/usr/bin/apt" ] && apt install apt
+
+# Do we have postgresql, we need to reindex, see https://www.debian.org/releases/buster/amd64/release-notes/ch-information.en.html#postgresql-reindex
+[ $(dpkg -l | grep -c postgresql-9.6) -ge 1 ] && su - postgres -c 'reindexdb --all'
 
 # minimal system upgrade
 aptitude upgrade
@@ -138,6 +138,21 @@ if [ -z $(postconf -nh compatibility_level) ]; then sed -iE 's/^readme_directory
 diff -Nur /tmp/main.cf /etc/postfix/main.cf && \
 postfix reload
 
+# Upgrade postgres
+# See also https://www.debian.org/releases/stretch/amd64/release-notes/ch-information.de.html#plperl
+if [ "$(dpkg -l | grep "postgresql-9.6" | awk {'print $2'})" = "postgresql-9.6" ]; then \
+ aptitude install postgresql-11 && \
+ pg_dropcluster --stop 11 main && \
+ /etc/init.d/postgresql stop && \
+ pg_upgradecluster -v 11 9.6 main && \
+ sed -i "s/^manual/auto/g" /etc/postgresql/11/main/start.conf && \
+ sed -i "s/^port = .*/port = 5432/" /etc/postgresql/11/main/postgresql.conf && \
+ sed -i "s/^shared_buffers = .*/shared_buffers = 128MB/" /etc/postgresql/11/main/postgresql.conf && \
+ /etc/init.d/postgresql restart && \
+ su - postgres -c 'reindexdb --all'; \
+fi
+pg_dropcluster 9.6 main
+
 # transition docker-ce to buster package
 DOCKER_VER="$(apt-cache policy docker-ce | grep debian-buster | head -1 | awk '{print $1}')" && [ -n "${DOCKER_VER}" ] && apt install docker-ce=${DOCKER_VER} docker-ce-cli=${DOCKER_VER}
 
@@ -174,16 +189,3 @@ apt purge $(dpkg -l | awk '/^rc/ { print $2 }')
 reboot && sleep 180; echo u > /proc/sysrq-trigger ; sleep 2 ; echo s > /proc/sysrq-trigger ; sleep 2 ; echo b > /proc/sysrq-trigger
 
 ### not needed until now
-# Upgrade postgres
-# See also https://www.debian.org/releases/stretch/amd64/release-notes/ch-information.de.html#plperl
-if [ "$(dpkg -l | grep "postgresql-9.4" | awk {'print $2'})" = "postgresql-9.4" ]; then \
- aptitude install postgresql-9.6 && \
- pg_dropcluster --stop 9.6 main && \
- /etc/init.d/postgresql stop && \
- pg_upgradecluster -v 9.6 9.4 main && \
- sed -i "s/^manual/auto/g" /etc/postgresql/9.6/main/start.conf && \
- sed -i "s/^port = .*/port = 5432/" /etc/postgresql/9.6/main/postgresql.conf && \
- sed -i "s/^shared_buffers = .*/shared_buffers = 128MB/" /etc/postgresql/9.6/main/postgresql.conf && \
- /etc/init.d/postgresql restart; \
-fi
-pg_dropcluster 9.4 main
