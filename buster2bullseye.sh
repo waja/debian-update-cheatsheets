@@ -128,6 +128,21 @@ rename s/php73/php74/g /etc/nginx/conf.d/*php73*.conf
 sed -i s/php7.3-fpm/php7.4-fpm/g /etc/nginx/conf.d/*.conf /etc/nginx/snippets/*.conf /etc/nginx/sites-available/*
 systemctl restart nginx
 
+# Upgrade postgres
+# See also https://www.debian.org/releases/stretch/amd64/release-notes/ch-information.de.html#plperl
+if [ "$(dpkg -l | grep "postgresql-11" | awk {'print $2'})" = "postgresql-11" ]; then \
+ aptitude install postgresql-13 && \
+ pg_dropcluster --stop 13 main && \
+ /etc/init.d/postgresql stop && \
+ pg_upgradecluster -v 13 11 main && \
+ sed -i "s/^manual/auto/g" /etc/postgresql/13/main/start.conf && \
+ sed -i "s/^port = .*/port = 5432/" /etc/postgresql/13/main/postgresql.conf && \
+ sed -i "s/^shared_buffers = .*/shared_buffers = 128MB/" /etc/postgresql/13/main/postgresql.conf && \
+ /etc/init.d/postgresql restart && \
+ su - postgres -c 'reindexdb --all'; \
+fi
+pg_dropcluster 11 main
+
 # transition docker-ce to bullseye package
 DOCKER_VER="$(apt-cache policy docker-ce | grep debian-bullseye | head -1 | awk '{print $1}')" && [ -n "${DOCKER_VER}" ] && apt install docker-ce=${DOCKER_VER} docker-ce-cli=${DOCKER_VER}
 
@@ -179,17 +194,3 @@ if [ $(postconf -n smtpd_relay_restrictions | wc -l) -eq 0 ]; then sed -i '/^myh
 if [ -z $(postconf -nh compatibility_level) ]; then sed -iE 's/^readme_directory = no/readme_directory = no\n\n# See http:\/\/www.postfix.org\/COMPATIBILITY_README.html -- default to 2 on\n# fresh installs.\ncompatibility_level = 2\n\n/' /etc/postfix/main.cf; fi && \
 diff -Nur /tmp/postfix/main.cf /etc/postfix/main.cf && \
 postfix reload
-
-# Upgrade postgres
-# See also https://www.debian.org/releases/buster/amd64/release-notes/ch-information.de.html#plperl
-if [ "$(dpkg -l | grep "postgresql-9.4" | awk {'print $2'})" = "postgresql-9.4" ]; then \
- apt install postgresql-9.6 && \
- pg_dropcluster --stop 9.6 main && \
- /etc/init.d/postgresql stop && \
- pg_upgradecluster -v 9.6 9.4 main && \
- sed -i "s/^manual/auto/g" /etc/postgresql/9.6/main/start.conf && \
- sed -i "s/^port = .*/port = 5432/" /etc/postgresql/9.6/main/postgresql.conf && \
- sed -i "s/^shared_buffers = .*/shared_buffers = 128MB/" /etc/postgresql/9.6/main/postgresql.conf && \
- /etc/init.d/postgresql restart; \
-fi
-pg_dropcluster 9.4 main
