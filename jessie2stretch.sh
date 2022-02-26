@@ -15,7 +15,7 @@ cat >  /etc/apt/sources.list.d/archive.debian.org.list<<EOF
 deb     http://archive.debian.org/debian/     jessie main contrib non-free
 deb-src http://archive.debian.org/debian/     jessie main contrib non-free
 EOF
-aptitude update && \
+aptitude update ; \
 aptitude install systemd systemd-sysv libpam-systemd && rm /etc/apt/sources.list.d/archive.debian.org.list
 
 # are there 3rd party packages installed? (https://www.debian.org/releases/stretch/amd64/release-notes/ch-upgrading.de.html#system-status)
