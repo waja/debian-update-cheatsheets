@@ -55,7 +55,7 @@ libc6 glibc/upgrade boolean true
 libc6 glibc/restart-services string
 libc6 libraries/restart-without-asking boolean true
 EOF
-/usr/bin/debconf-set-selections /tmp/bullseye.preseed && rm /tmp/bullseye.preseed
+/usr/bin/debconf-set-selections /tmp/bookworm.preseed && rm /tmp/bookworm.preseed
 
 # minimal system upgrade
 apt upgrade --without-new-pkgs
