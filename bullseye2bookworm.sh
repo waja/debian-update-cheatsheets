@@ -63,6 +63,9 @@ EOF
 # minimal system upgrade
 apt upgrade --without-new-pkgs
 
+# Install zstd to add zstd compress support to update-initramfs
+apt install zstd
+
 # full-upgrade
 apt full-upgrade
 
