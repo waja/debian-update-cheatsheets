@@ -79,12 +79,12 @@ grep ^extend /etc/snmp/snmpd.conf > /etc/snmp/snmpd.conf.d/extend.conf
 sed -i s/^rocommunity/#rocommunity/ $CFG
 
 # Migrate (webserver) from php7.4 to php8.2
-apt install $(dpkg -l |grep php7.4 | awk '/^i/ { print $2 }' |grep -v ^php7.3-opcache |sed s/php7.3/php/)
-[ -L /etc/apache2/mods-enabled/mpm_prefork.load ] && a2dismod php7.4 && a2enmod php8.2 && systemctl restart apache2; ls -la /etc/php/7.3/*/conf.d/
+apt install $(dpkg -l |grep php7.4 | awk '/^i/ { print $2 }' |grep -v ^php7.4-opcache |sed s/php7.4/php/)
+[ -L /etc/apache2/mods-enabled/mpm_prefork.load ] && a2dismod php7.4 && a2enmod php8.2 && systemctl restart apache2; ls -la /etc/php/7.4/*/conf.d/
 # php-fpm
 tail -10 /etc/php/7.4/fpm/pool.d/www.conf
 vi /etc/php/8.2/fpm/pool.d/www.conf 
-systemctl disable php7.4-fpm && systemctl stop php7.3-fpm && systemctl restart php8.2-fpm
+systemctl disable php7.4-fpm && systemctl stop php7.4-fpm && systemctl restart php8.2-fpm
 # nginx
 rename s/php74/php83/g /etc/nginx/conf.d/*php74*.conf
 sed -i s/php7.4-fpm/php8.2-fpm/g /etc/nginx/conf.d/*.conf /etc/nginx/snippets/*.conf /etc/nginx/sites-available/*
