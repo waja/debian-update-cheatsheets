@@ -110,8 +110,8 @@ DOCKER_VER="$(apt-cache policy docker-ce | grep debian-bookworm | head -1 | awk 
 # transition icingaweb2 to bookworm package
 ICINGAWEB2_VER="$(apt-cache policy icingaweb2 | grep "\.bookworm" | head -1 | awk '{print $1}')" && [ -n "${ICINGAWEB2_VER}" ] && apt install icingaweb2=${ICINGAWEB2_VER} icingaweb2-common=${ICINGAWEB2_VER} icingaweb2-module-monitoring=${ICINGAWEB2_VER} php-icinga=${ICINGAWEB2_VER} icingacli=${ICINGAWEB2_VER}
 
-# transition icinga2 to bookworm packages
-apt-get install $(dpkg -l | grep icinga2 | grep -v common | awk '{print $2"/icinga-bookworm"}')
+# transition icinga2 to stock bookworm packages
+apt-get install $(dpkg -l | grep icinga2 | grep -v common | awk '{print $2"/stable"}')
 
 # remove old squeeze packages left around (keep eyes open!)
 apt autoremove && \
