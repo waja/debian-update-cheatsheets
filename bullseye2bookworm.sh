@@ -66,6 +66,11 @@ apt upgrade --without-new-pkgs
 # full-upgrade
 apt full-upgrade
 
+# randomize crontab
+if [ -f /etc/crontab.dpkg-new ]; then CFG=/etc/crontab.dpkg-new; else CFG=/etc/crontab; fi
+sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' $CFG
+sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' $CFG
+
 # Migrate (webserver) from php7.4 to php8.2
 apt install $(dpkg -l |grep php7.4 | awk '/^i/ { print $2 }' |grep -v ^php7.3-opcache |sed s/php7.3/php/)
 [ -L /etc/apache2/mods-enabled/mpm_prefork.load ] && a2dismod php7.4 && a2enmod php8.2 && systemctl restart apache2; ls -la /etc/php/7.3/*/conf.d/
@@ -130,11 +135,6 @@ if [ -f /etc/snmp/snmpd.conf.dpkg-new ]; then CFG=/etc/snmp/snmpd.conf.dpkg-new;
 sed -i "s/^agentaddress.*/agentaddress udp:161,udp6:[::1]:161/g" $CFG
 sed -i "s/public default.*/$COMMUNITY default/g" $CFG
 grep ^extend /etc/snmp/snmpd.conf >> $CFG
-
-# randomize crontab
-if [ -f /etc/crontab.dpkg-new ]; then CFG=/etc/crontab.dpkg-new; else CFG=/etc/crontab; fi
-sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' $CFG
-sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' $CFG
 
 ## phpmyadmin
 if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
