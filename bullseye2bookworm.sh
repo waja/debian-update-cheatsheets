@@ -26,6 +26,9 @@ rename s/bullseye/bookworm/ /etc/apt/sources.list.d/*bullseye*
 rgrep --color bullseye /etc/apt/sources.list*
 apt update
 
+# Remove changes to /etc/apt/apt.conf.d/50unattended-upgrades from ucf database
+ucf -p /etc/apt/apt.conf.d/50unattended-upgrades
+
 # check package status
 dpkg --audit
 aptitude search "~ahold" | grep "^.h"
@@ -62,20 +65,6 @@ apt upgrade --without-new-pkgs
 
 # full-upgrade
 apt full-upgrade
-
-# migrate unattended-upgrades config, modify the new config to our needs and place it where it is expected.
-# Keep LOCAL config if asked when upgrading (and run this snippet afterwards, when dpkg is not blocked anymore and choose 'package maintainer version' then, cause this is the one we are adjusting here)
-if [ -f /etc/apt/apt.conf.d/50unattended-upgrades.ucf-old ]; then CFG=/etc/apt/apt.conf.d/50unattended-upgrades.ucf-old; else CFG=/etc/apt/apt.conf.d/50unattended-upgrades; fi && \
-cp /usr/share/unattended-upgrades/50unattended-upgrades /tmp/ && \
-MAIL=$(grep ^Unattended-Upgrade::Mail $CFG | awk -F\" '{print $2}'); sed -i 's#//Unattended-Upgrade::Mail ".*";#Unattended-Upgrade::Mail "'${MAIL}'";#g' /tmp/50unattended-upgrades && \
-TIME=$(grep ^Unattended-Upgrade::Automatic-Reboot-Time $CFG | awk -F\" '{print $2}'); if [ "${TIME}" != "" ]; then sed -i 's#//Unattended-Upgrade::Automatic-Reboot-Time "02:00"#Unattended-Upgrade::Automatic-Reboot-Time "'${TIME}'"#' /tmp/50unattended-upgrades; fi
-sed -i 's#//      "origin=Debian,codename=${distro_codename}-updates"#        "origin=Debian,codename=${distro_codename}-updates"#' /tmp/50unattended-upgrades && \
-sed -i 's#//Unattended-Upgrade::Remove-Unused-Dependencies "false"#Unattended-Upgrade::Remove-Unused-Dependencies "true"#' /tmp/50unattended-upgrades && \
-sed -i 's#//Unattended-Upgrade::Automatic-Reboot "false"#Unattended-Upgrade::Automatic-Reboot "true"#' /tmp/50unattended-upgrades && \
-sed -i '/codename=..distro_codename.-updates/ s#^//#  #' /tmp/50unattended-upgrades && \
-sed -i 's#//Unattended-Upgrade::MailReport "on-change"#Unattended-Upgrade::MailReport "on-change"#' /tmp/50unattended-upgrades && \
-/bin/bash /usr/bin/ucf --three-way --debconf-ok /tmp/50unattended-upgrades /etc/apt/apt.conf.d/50unattended-upgrades && \
-[ "$CFG" == "/etc/apt/apt.conf.d/50unattended-upgrades.ucf-old" ] && mv $CFG /etc/apt/apt.conf.d/50unattended-upgrades.ucf-save
 
 # Migrate (webserver) from php7.4 to php8.2
 apt install $(dpkg -l |grep php7.4 | awk '/^i/ { print $2 }' |grep -v ^php7.3-opcache |sed s/php7.3/php/)
