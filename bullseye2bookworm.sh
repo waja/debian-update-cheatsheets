@@ -36,7 +36,7 @@ dpkg --get-selections "*" > ~/curr-pkgs.txt
 aptitude unmarkauto vim net-tools && \
 aptitude unmarkauto libapache2-mpm-itk && \
 aptitude unmarkauto monitoring-plugins-contrib && \
-aptitude unmarkauto $(dpkg-query -W 'linux-image-4.19.0*' | cut -f1)
+aptitude unmarkauto $(dpkg-query -W 'linux-image-5.10.0*' | cut -f1)
  
 # have a look into required and free disk space
 apt-get -o APT::Get::Trivial-Only=true dist-upgrade || df -h
