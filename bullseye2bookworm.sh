@@ -22,6 +22,7 @@ sed -i s/bullseye/bookworm/g /etc/apt/sources.list*
 sed -i "s/ stable/ bookworm/g" /etc/apt/sources.list*
 sed -i s/bullseye/bookworm/g /etc/apt/preferences*
 sed -i s/bullseye/bookworm/g /etc/apt/sources.list.d/*bullseye*
+sed -i "s/non-free$/non-free non-free-firmware/" /etc/apt/sources.list
 rename s/bullseye/bookworm/ /etc/apt/sources.list.d/*bullseye*
 rgrep --color bullseye /etc/apt/sources.list*
 apt update
