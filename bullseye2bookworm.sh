@@ -54,7 +54,7 @@ dpkg -l "linux-image*" | grep ^ii | grep -i meta || echo "Please have a look int
 script -t 2>~/upgrade-bookworm.time -a ~/upgrade-bookworm.script
 
 # install our preseed so libc doesn't whine
-cat > /tmp/bullseye.preseed <<EOF
+cat > /tmp/bookworm.preseed <<EOF
 libc6 glibc/upgrade boolean true
 libc6 glibc/restart-services string
 libc6 libraries/restart-without-asking boolean true
