@@ -61,11 +61,11 @@ libc6 libraries/restart-without-asking boolean true
 EOF
 /usr/bin/debconf-set-selections /tmp/bookworm.preseed && rm /tmp/bookworm.preseed
 
-# minimal system upgrade
-apt upgrade --without-new-pkgs
-
 # Install zstd to add zstd compress support to update-initramfs
 apt install zstd
+
+# minimal system upgrade
+apt upgrade --without-new-pkgs
 
 # chrony update, modify the new config to our needs and place it where it is expected.
 if [ ! -d /etc/chrony/conf.d/ ]; then mkdir -p /etc/chrony/conf.d/; fi; echo "pool 0.de.pool.ntp.org iburst" > /etc/chrony/conf.d/pool.conf
