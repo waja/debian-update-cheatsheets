@@ -83,7 +83,9 @@ if [ -f /etc/snmp/snmpd.conf.dpkg-new ]; then CFG=/etc/snmp/snmpd.conf.dpkg-new;
    else CFG=/etc/snmp/snmpd.conf; fi
 grep ^rocommunity /etc/snmp/snmpd.conf > /etc/snmp/snmpd.conf.d/rocommunity.conf
 grep ^extend /etc/snmp/snmpd.conf > /etc/snmp/snmpd.conf.d/extend.conf
+echo "agentaddress  udp:161,[::1]" > /etc/snmp/snmpd.conf.d/agentaddress.conf
 sed -i s/^rocommunity/#rocommunity/ $CFG
+sed -i s/^agentaddress/#agentaddress/ $CFG
 
 # Migrate (webserver) from php7.4 to php8.2
 apt install $(dpkg -l |grep php7.4 | awk '/^i/ { print $2 }' |grep -v ^php7.4-opcache |sed s/php7.4/php/)
