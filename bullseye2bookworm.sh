@@ -95,7 +95,7 @@ tail -10 /etc/php/7.4/fpm/pool.d/www.conf
 vi /etc/php/8.2/fpm/pool.d/www.conf 
 systemctl disable php7.4-fpm && systemctl stop php7.4-fpm && systemctl restart php8.2-fpm
 # nginx
-rename s/php74/php83/g /etc/nginx/conf.d/*php74*.conf
+rename s/php74/php82/g /etc/nginx/conf.d/*php74*.conf
 sed -i s/php7.4-fpm/php8.2-fpm/g /etc/nginx/conf.d/*.conf /etc/nginx/snippets/*.conf /etc/nginx/sites-available/*
 systemctl restart nginx
 
