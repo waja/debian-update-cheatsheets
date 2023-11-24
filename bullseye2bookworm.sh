@@ -89,6 +89,7 @@ sed -i s/^agentaddress/#agentaddress/ $CFG
 
 # Migrate (webserver) from php7.4 to php8.2
 apt install $(dpkg -l |grep php7.4 | awk '/^i/ { print $2 }' |grep -v ^php7.4-opcache |sed s/php7.4/php/)
+sed -i "s/IfModule mod_php7/IfModule mod_php/g" /etc/apache2/sites-available/*
 [ -L /etc/apache2/mods-enabled/mpm_prefork.load ] && a2dismod php7.4 && a2enmod php8.2 && systemctl restart apache2; ls -la /etc/php/7.4/*/conf.d/
 # php-fpm
 tail -10 /etc/php/7.4/fpm/pool.d/www.conf
