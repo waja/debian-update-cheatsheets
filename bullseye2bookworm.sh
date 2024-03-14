@@ -16,7 +16,7 @@ aptitude search '~i(!~ODebian)'
 rgrep --color "deb ftp" /etc/apt/sources.list*
 
 # Transition and remove entries from older releases
-sed -iE "/(lenny|sarge|squeeze|wheezy|jessie|stretch|buster|volatile|proposed-updates)/d" /etc/apt/sources.list*
+sed -i -E "/(lenny|sarge|squeeze|wheezy|jessie|stretch|buster|volatile|proposed-updates)/d" /etc/apt/sources.list*
 # change distro (please move 3rd party sources to /etc/apt/sources.list.d/), maybe look into http://ftp.cyconet.org/debian/sources.list.d/
 sed -i s/bullseye/bookworm/g /etc/apt/sources.list*
 sed -i "s/ stable/ bookworm/g" /etc/apt/sources.list*
