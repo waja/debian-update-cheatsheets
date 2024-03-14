@@ -87,6 +87,12 @@ echo "agentaddress  udp:161,[::1]" > /etc/snmp/snmpd.conf.d/agentaddress.conf
 sed -i s/^rocommunity/#rocommunity/ $CFG
 sed -i s/^agentaddress/#agentaddress/ $CFG
 
+## phpmyadmin
+if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
+   else CFG=/etc/phpmyadmin/config.inc.php; fi
+sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
+sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" $CFG
+
 # Migrate (webserver) from php7.4 to php8.2
 apt install $(dpkg -l |grep php7.4 | awk '/^i/ { print $2 }' |grep -v ^php7.4-opcache |sed s/php7.4/php/)
 sed -i "s/IfModule mod_php7/IfModule mod_php/g" /etc/apache2/sites-available/*
@@ -144,13 +150,6 @@ reboot && sleep 180; echo u > /proc/sysrq-trigger ; sleep 2 ; echo s > /proc/sys
 # (re)enable wheel
 if [ -f /etc/pam.d/su.dpkg-new ]; then CFG=/etc/pam.d/su.dpkg-new; else CFG=/etc/pam.d/su; fi
 sed -i "s/# auth       required   pam_wheel.so/auth       required   pam_wheel.so/" $CFG
-
-
-## phpmyadmin
-if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
-   else CFG=/etc/phpmyadmin/config.inc.php; fi
-sed -i "s/\['auth_type'\] = 'cookie'/\['auth_type'\] = 'http'/" $CFG
-sed -i "s#//\$cfg\['Servers'\]\[\$i\]\['auth_type'\] = 'http';#\$cfg['Servers'][\$i]['auth_type'] = 'http';#" $CFG
 
 # Update old postfix configurations
 cp /etc/postfix/main.cf /tmp/main.cf && \
