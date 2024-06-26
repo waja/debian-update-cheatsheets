@@ -15,6 +15,9 @@ aptitude search '~i(!~ODebian)'
 # check for ftp protocol in sources lists (https://www.debian.org/releases/bookworm/amd64/release-notes/ch-information.en.html#deprecation-of-ftp-apt-mirrors)
 rgrep --color "deb ftp" /etc/apt/sources.list*
 
+# Install rename
+[ ! -x /usr/bin/rename ] && apt install rename
+
 # Transition and remove entries from older releases
 sed -i -E "/(lenny|sarge|squeeze|wheezy|jessie|stretch|buster|volatile|proposed-updates)/d" /etc/apt/sources.list*
 # Migrate source list of docker-ctop into our scheme
