@@ -136,8 +136,8 @@ apt-get install $(dpkg -l | grep icinga2 | grep -v common | awk '{print $2"/icin
 
 # remove old squeeze packages left around (keep eyes open!)
 apt autoremove && \
-apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|check-openmanage|check-linux-bonding|webalizer|icinga|srvadmin|kerio' | awk '/^i *A/ { print $3 }') && \
-apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|check-openmanage|check-linux-bonding|webalizer|icinga|srvadmin|kerio' | awk '/^i/ { print $2 }') && \
+apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|check-openmanage|check-linux-bonding|webalizer|icinga|srvadmin|kerio|hddtemp' | awk '/^i *A/ { print $3 }') && \
+apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|check-openmanage|check-linux-bonding|webalizer|icinga|srvadmin|kerio|hddtemp' | awk '/^i/ { print $2 }') && \
 apt purge $(dpkg -l | grep etch | grep -v xen | grep -v unbound | grep -v finch | awk '/^rc/ { print $2 }') && \
 apt purge $(dpkg -l | grep lenny | grep -v xen | awk '/^rc/ { print $2 }') && \
 apt purge $(dpkg -l | grep -E 'deb6|squeeze' | grep -v xen | awk '/^rc/ { print $2 }') && \
