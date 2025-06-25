@@ -67,7 +67,7 @@ sed -i 's#root\tcd#root    perl -e "sleep int(rand(300))" \&\& cd#' $CFG
 sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' $CFG
 
 # Migrate chrony config adjustment to sources.d directory
-if [ -f /etc/chrony/conf.d/pool.conf ]; then mv /etc/chrony/sources.d/local-ntp-server.sources /etc/chrony/conf.d/pool.conf && sed -i "s/^pool/server/" /etc/chrony/sources.d/local-ntp-server.sources fi;
+if [ -f /etc/chrony/conf.d/pool.conf ]; then mv /etc/chrony/conf.d/pool.conf /etc/chrony/sources.d/local-ntp-server.sources && sed -i "s/^pool/server/" /etc/chrony/sources.d/local-ntp-server.sources; fi
 
 # full-upgrade
 apt full-upgrade
