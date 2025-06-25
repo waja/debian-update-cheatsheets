@@ -80,7 +80,7 @@ apt full-upgrade
 
 # randomize crontab
 if [ -f /etc/crontab.dpkg-new ]; then CFG=/etc/crontab.dpkg-new; else CFG=/etc/crontab; fi
-sed -i 's#root    cd#root    perl -e "sleep int(rand(300))" \&\& cd#' $CFG
+sed -i 's#root\tcd#root    perl -e "sleep int(rand(300))" \&\& cd#' $CFG
 sed -i 's#root\ttest#root\tperl -e "sleep int(rand(3600))" \&\& test#' $CFG
 
 # (re)configure snmpd
