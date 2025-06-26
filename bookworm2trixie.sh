@@ -20,10 +20,11 @@ sed -i -E "/(lenny|sarge|squeeze|wheezy|jessie|stretch|buster|volatile|proposed-
 # Migrate source list of docker-ctop into our scheme
 [ -f /etc/apt/sources.list.d/azlux.list ] && mv /etc/apt/sources.list.d/azlux.list /etc/apt/sources.list.d/bookworm-azlux.list && sed -i s/buster/bookworm/g /etc/apt/sources.list.d/bookworm-azlux.list
 # change distro (please move 3rd party sources to /etc/apt/sources.list.d/), maybe look into http://ftp.cyconet.org/debian/sources.list.d/
-sed -i s/bookworm/trixie/g /etc/apt/sources.list*
-sed -i "s/ stable/ trixie/g" /etc/apt/sources.list*
+sed -i s/bookworm/trixie/g /etc/apt/sources.list
+sed -i "s/ stable/ trixie/g" /etc/apt/sources.list
 sed -i s/bookworm/trixie/g /etc/apt/preferences*
-sed -i s/bookworm/trixie/g /etc/apt/sources.list.d/*bookworm*
+find /etc/apt/sources.list.d -type f -name *bookworm* -exec sed -i 's/bookworm/trixie/g' {} \;
+find /etc/apt/sources.list.d -type f -exec sed -i 's/bookworm/trixie/g' {} \;
 rename s/bookworm/trixie/ /etc/apt/sources.list.d/*bookworm*
 rgrep --color bookworm /etc/apt/sources.list*
 apt update
@@ -118,7 +119,7 @@ apt purge $(dpkg -l | grep -E 'deb6|squeeze' | grep -v xen | awk '/^rc/ { print 
 apt purge $(dpkg -l | grep -E 'deb7|wheezy' | grep -v xen | grep -v  -E 'linux-image|mailscanner|openswan|debian-security-support' | awk '/^rc/ { print $2 }') && \
 apt purge $(dpkg -l | grep -E 'deb8|jessie|deb9|stretch|deb10|buster|deb11|bullseye' | grep -v xen | grep -v  -E 'linux-image|debian-security-support|icinga2|phpmyadmin' | awk '{ print $2 }') && \
 apt purge $(dpkg -l | grep -E 'deb12|bookworm' | grep -v xen | grep -v  -E 'linux-image|debian-security-support|icinga2|phpmyadmin|megacli' | awk '{ print $2 }') && \
-apt -y install deborphan && apt purge $(deborphan | grep -v xen | grep -v -E 'libpam-cracklib|libapache2-mpm-itk')
+wget http://ftp.de.debian.org/debian/pool/main/d/deborphan/deborphan_1.7.35_amd64.deb -O /tmp/deborphan_1.7.35_amd64.deb && apt install /tmp/deborphan_1.7.35_amd64.deb && apt purge $(deborphan | grep -v xen | grep -v -E 'libpam-cracklib|libapache2-mpm-itk')
 apt purge $(dpkg -l | awk '/^rc/ { print $2 }')
 
 # for the brave YoloOps crowd
