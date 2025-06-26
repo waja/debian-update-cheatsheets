@@ -109,6 +109,8 @@ ICINGAWEB2_VER="$(apt-cache policy icingaweb2 | grep "\.trixie" | head -1 | awk 
 # transition icinga2 to trixie packages
 apt-get install $(dpkg -l | grep icinga2 | grep -v common | awk '{print $2"/icinga-trixie"}')
 
+# Switch to deb822 format for the sources.lists
+
 # remove old squeeze packages left around (keep eyes open!)
 apt autoremove && \
 apt purge $(aptitude search ?obsolete | grep -v -E 'linux-image|mailscanner|check-openmanage|check-linux-bonding|webalizer|icinga|srvadmin|kerio|hddtemp' | awk '/^i *A/ { print $3 }') && \
