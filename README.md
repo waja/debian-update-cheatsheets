@@ -7,6 +7,7 @@ If you are not experienced updating Debian (based) systems, please keep away fro
 For each update exists a dedicated branch, the main branch reflects the update to the latest release:  
 
 * [main](https://github.com/waja/debian-update-cheatsheets/tree/main)
+* [bookworm2trixie](https://github.com/waja/debian-update-cheatsheets/tree/bookworm2trixie)
 * [bullseye2bookworm](https://github.com/waja/debian-update-cheatsheets/tree/bullseye2bookworm)
 * [buster2bullseye](https://github.com/waja/debian-update-cheatsheets/tree/buster2bullseye)
 * [stretch2buster](https://github.com/waja/debian-update-cheatsheets/tree/stretch2buster)
