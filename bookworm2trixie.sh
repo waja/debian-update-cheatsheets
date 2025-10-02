@@ -73,7 +73,7 @@ if [ -f /etc/chrony/conf.d/pool.conf ]; then mv /etc/chrony/conf.d/pool.conf /et
 # full-upgrade
 apt full-upgrade
 
-# Migrate (webserver) from php8.4 to php8.4
+# Migrate (webserver) from php8.2 to php8.4
 apt install $(dpkg -l |grep php8.2 | awk '/^i/ { print $2 }' |grep -v ^php8.2-opcache |sed s/php8.2/php/)
 sed -i "s/IfModule mod_php7/IfModule mod_php/g" /etc/apache2/sites-available/*
 [ -L /etc/apache2/mods-enabled/mpm_prefork.load ] && a2dismod php8.2 && a2enmod php8.4 && systemctl restart apache2; ls -la /etc/php/8.2/*/conf.d/
@@ -82,7 +82,7 @@ tail -10 /etc/php/8.2/fpm/pool.d/www.conf
 vi /etc/php/8.4/fpm/pool.d/www.conf 
 systemctl disable php8.2-fpm && systemctl stop php8.2-fpm && systemctl restart php8.4-fpm
 # nginx
-rename s/php74/php82/g /etc/nginx/conf.d/*php74*.conf
+rename s/php82/php84/g /etc/nginx/conf.d/*php82*.conf
 sed -i s/php8.2-fpm/php8.4-fpm/g /etc/nginx/conf.d/*.conf /etc/nginx/snippets/*.conf /etc/nginx/sites-available/*
 systemctl restart nginx
 
