@@ -16,7 +16,7 @@ rgrep --color "deb ftp" /etc/apt/sources.list*
 [ ! -x /usr/bin/rename ] && apt install rename
 
 # Transition and remove entries from older releases
-sed -i -E "/(lenny|sarge|squeeze|wheezy|jessie|stretch|buster|volatile|proposed-updates)/d" /etc/apt/sources.list*
+sed -i -E "/(lenny|sarge|squeeze|wheezy|jessie|stretch|buster|volatile|proposed-updates)/d" /etc/apt/sources.list
 # Migrate source list of docker-ctop into our scheme
 [ -f /etc/apt/sources.list.d/azlux.list ] && mv /etc/apt/sources.list.d/azlux.list /etc/apt/sources.list.d/bookworm-azlux.list && sed -i s/buster/bookworm/g /etc/apt/sources.list.d/bookworm-azlux.list
 # change distro (please move 3rd party sources to /etc/apt/sources.list.d/), maybe look into http://ftp.cyconet.org/debian/sources.list.d/
@@ -110,6 +110,17 @@ ICINGAWEB2_VER="$(apt-cache policy icingaweb2 | grep "\.trixie" | head -1 | awk 
 apt-get install $(dpkg -l | grep icinga2 | grep -v common | awk '{print $2"/icinga-trixie"}')
 
 # Switch to deb822 format for the sources.lists
+[ -f /etc/apt/sources.list.d/restricted-cyconet.list* ] && wget https://ftp.cyconet.org/debian/sources.list.d/restricted-cyconet.sources -P /etc/apt/sources.list.d/
+[ -f /etc/apt/sources.list.d/trixie-backports-cyconet.list* ] && wget https://ftp.cyconet.org/debian/sources.list.d/trixie-backports-cyconet.sources -P /etc/apt/sources.list.d/
+[ -f /etc/apt/sources.list.d/trixie-docker.list* ] && \
+	echo -e "Types: deb\nURIs: https://download.docker.com/linux/$(. /etc/os-release && echo "$ID")/\nSuites: $(. /etc/os-release && echo "$VERSION_CODENAME")\nComponents: stable\nSigned-By: /usr/share/keyrings/docker-archive.gpg" > \
+	  /etc/apt/sources.list.d/$(. /etc/os-release && echo "$VERSION_CODENAME")-docker.sources && \
+	curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive.gpg
+[ -f /etc/apt/sources.list.d/*azlux.list* ] && \
+	echo -e "Types: deb\nURIs: http://packages.azlux.fr/debian/\nSuites: $(. /etc/os-release && echo "$VERSION_CODENAME")\nComponents: main\nSigned-By: /usr/share/keyrings/azlux-archive.gpg" > \
+          /etc/apt/sources.list.d/$(. /etc/os-release && echo "$VERSION_CODENAME")-azlux.sources && \
+        curl -fsSL https://azlux.fr/repo.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/azlux-archive.gpg
+apt modernize-sources
 
 # remove old squeeze packages left around (keep eyes open!)
 apt autoremove && \
