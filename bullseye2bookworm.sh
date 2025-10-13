@@ -23,9 +23,10 @@ sed -i -E "/(lenny|sarge|squeeze|wheezy|jessie|stretch|buster|volatile|proposed-
 # Migrate source list of docker-ctop into our scheme
 [ -f /etc/apt/sources.list.d/azlux.list ] && mv /etc/apt/sources.list.d/azlux.list /etc/apt/sources.list.d/bullseye-azlux.list && sed -i s/buster/bullseye/g /etc/apt/sources.list.d/bullseye-azlux.list
 # change distro (please move 3rd party sources to /etc/apt/sources.list.d/), maybe look into http://ftp.cyconet.org/debian/sources.list.d/
-sed -i s/bullseye/bookworm/g /etc/apt/sources.list*
-sed -i "s/ stable/ bookworm/g" /etc/apt/sources.list*
-sed -i s/bullseye/bookworm/g /etc/apt/preferences*
+sed -i s/bullseye/bookworm/g /etc/apt/sources.list
+sed -i "s/ stable/ bookworm/g" /etc/apt/sources.list
+sed -i s/bullseye/bookworm/g /etc/apt/preferences
+sed -i s/bullseye/bookworm/g /etc/apt/preferences.d/*
 sed -i s/bullseye/bookworm/g /etc/apt/sources.list.d/*bullseye*
 sed -i "s/non-free$/non-free non-free-firmware/" /etc/apt/sources.list
 rename s/bullseye/bookworm/ /etc/apt/sources.list.d/*bullseye*
