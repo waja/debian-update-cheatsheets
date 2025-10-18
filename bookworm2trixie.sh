@@ -22,7 +22,7 @@ sed -i -E "/(lenny|sarge|squeeze|wheezy|jessie|stretch|buster|volatile|proposed-
 # change distro (please move 3rd party sources to /etc/apt/sources.list.d/), maybe look into http://ftp.cyconet.org/debian/sources.list.d/
 sed -i s/bookworm/trixie/g /etc/apt/sources.list
 sed -i "s/ stable/ trixie/g" /etc/apt/sources.list
-sed -i s/bookworm/trixie/g /etc/apt/preferences*
+sed -i s/bookworm/trixie/g /etc/apt/preferences.d/*
 find /etc/apt/sources.list.d -type f -name *bookworm* -exec sed -i 's/bookworm/trixie/g' {} \;
 find /etc/apt/sources.list.d -type f -exec sed -i 's/bookworm/trixie/g' {} \;
 rename s/bookworm/trixie/ /etc/apt/sources.list.d/*bookworm*
