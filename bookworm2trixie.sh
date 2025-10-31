@@ -109,6 +109,7 @@ DOCKER_VER="$(apt-cache policy docker-ce | grep debian-trixie | head -1 | awk '{
 # Switch to deb822 format for the sources.lists
 [ -f /etc/apt/sources.list.d/restricted-cyconet.list* ] && wget https://ftp.cyconet.org/debian/sources.list.d/restricted-cyconet.sources -P /etc/apt/sources.list.d/ && rename s/cyconet.list/cyconet.list.old/ /etc/apt/sources.list.d/restricted-cyconet.list*
 [ -f /etc/apt/sources.list.d/trixie-backports-cyconet.list* ] && wget https://ftp.cyconet.org/debian/sources.list.d/trixie-backports-cyconet.sources -P /etc/apt/sources.list.d/ && rename s/cyconet.list/cyconet.list.old/ /etc/apt/sources.list.d/trixie-backports-cyconet.list*
+[ -f /etc/apt/sources.list.d/trixie-backports.list* ] && wget https://ftp.cyconet.org/debian/sources.list.d/trixie-backports.sources -P /etc/apt/sources.list.d/ && rename s/backports.list/backports.list.old/ /etc/apt/sources.list.d/trixie-backports.list*
 [ -f /etc/apt/sources.list.d/trixie-docker.list* ] && \
 	echo -e "Types: deb\nURIs: https://download.docker.com/linux/$(. /etc/os-release && echo "$ID")/\nSuites: $(. /etc/os-release && echo "$VERSION_CODENAME")\nComponents: stable\nSigned-By: /usr/share/keyrings/docker-archive.gpg" > \
 	  /etc/apt/sources.list.d/$(. /etc/os-release && echo "$VERSION_CODENAME")-docker.sources && \
