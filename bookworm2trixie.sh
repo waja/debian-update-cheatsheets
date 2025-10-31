@@ -103,12 +103,6 @@ pg_dropcluster 15 main
 # transition docker-ce to trixie package
 DOCKER_VER="$(apt-cache policy docker-ce | grep debian-trixie | head -1 | awk '{print $1}')" && [ -n "${DOCKER_VER}" ] && apt install docker-ce=${DOCKER_VER} docker-ce-cli=${DOCKER_VER}
 
-# transition icingaweb2 to trixie package
-ICINGAWEB2_VER="$(apt-cache policy icingaweb2 | grep "\.trixie" | head -1 | awk '{print $1}')" && [ -n "${ICINGAWEB2_VER}" ] && apt install icingaweb2=${ICINGAWEB2_VER} icingaweb2-common=${ICINGAWEB2_VER} icingaweb2-module-monitoring=${ICINGAWEB2_VER} php-icinga=${ICINGAWEB2_VER} icingacli=${ICINGAWEB2_VER}
-
-# transition icinga2 to trixie packages
-apt-get install $(dpkg -l | grep icinga2 | grep -v common | awk '{print $2"/icinga-trixie"}')
-
 # Switch to deb822 format for the sources.lists
 [ -f /etc/apt/sources.list.d/restricted-cyconet.list* ] && wget https://ftp.cyconet.org/debian/sources.list.d/restricted-cyconet.sources -P /etc/apt/sources.list.d/
 [ -f /etc/apt/sources.list.d/trixie-backports-cyconet.list* ] && wget https://ftp.cyconet.org/debian/sources.list.d/trixie-backports-cyconet.sources -P /etc/apt/sources.list.d/
