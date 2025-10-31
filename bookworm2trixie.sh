@@ -103,6 +103,9 @@ pg_dropcluster 15 main
 # transition docker-ce to trixie package
 DOCKER_VER="$(apt-cache policy docker-ce | grep debian-trixie | head -1 | awk '{print $1}')" && [ -n "${DOCKER_VER}" ] && apt install docker-ce=${DOCKER_VER} docker-ce-cli=${DOCKER_VER}
 
+# Try to detect if we are a icinga check node and install linux-sysctl-defaults to allow ping as user
+[ $(dpkg -l | grep -c icingacli) -eq 1 ] && apt install linux-sysctl-defaults
+
 # Switch to deb822 format for the sources.lists
 [ -f /etc/apt/sources.list.d/restricted-cyconet.list* ] && wget https://ftp.cyconet.org/debian/sources.list.d/restricted-cyconet.sources -P /etc/apt/sources.list.d/
 [ -f /etc/apt/sources.list.d/trixie-backports-cyconet.list* ] && wget https://ftp.cyconet.org/debian/sources.list.d/trixie-backports-cyconet.sources -P /etc/apt/sources.list.d/
