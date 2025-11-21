@@ -110,6 +110,11 @@ DOCKER_VER="$(apt-cache policy docker-ce | grep debian-trixie | head -1 | awk '{
 [ -f /etc/apt/sources.list.d/restricted-cyconet.list* ] && wget https://ftp.cyconet.org/debian/sources.list.d/restricted-cyconet.sources -P /etc/apt/sources.list.d/ && rename s/cyconet.list/cyconet.list.bak/ /etc/apt/sources.list.d/restricted-cyconet.list*
 [ -f /etc/apt/sources.list.d/trixie-backports-cyconet.list* ] && wget https://ftp.cyconet.org/debian/sources.list.d/trixie-backports-cyconet.sources -P /etc/apt/sources.list.d/ && rename s/cyconet.list/cyconet.list.bak/ /etc/apt/sources.list.d/trixie-backports-cyconet.list*
 [ -f /etc/apt/sources.list.d/trixie-backports.list* ] && wget https://ftp.cyconet.org/debian/sources.list.d/trixie-backports.sources -P /etc/apt/sources.list.d/ && rename s/backports.list/backports.list.bak/ /etc/apt/sources.list.d/trixie-backports.list*
+[ -f /etc/apt/sources.list.d/*le-vert.net* ] && \
+        echo -e "Types: deb\nURIs: http://hwraid.le-vert.net/debian\nSuites: $(. /etc/os-release && echo "$VERSION_CODENAME")\nComponents: main\nSigned-By: /usr/share/keyrings/le-vert.net-archive.gpg" > \
+          /etc/apt/sources.list.d/$(. /etc/os-release && echo "$VERSION_CODENAME")-le-vert.net.sources && \
+        curl -fsSL https://hwraid.le-vert.net/debian/hwraid.le-vert.net.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/le-vert.net-archive.gpg && \
+        rename s/le-vert.net.list/le-vert.net.list.bak/ /etc/apt/sources.list.d/*le-vert.net.list*
 [ -f /etc/apt/sources.list.d/trixie-docker.list* ] && \
 	echo -e "Types: deb\nURIs: https://download.docker.com/linux/$(. /etc/os-release && echo "$ID")/\nSuites: $(. /etc/os-release && echo "$VERSION_CODENAME")\nComponents: stable\nSigned-By: /usr/share/keyrings/docker-archive.gpg" > \
 	  /etc/apt/sources.list.d/$(. /etc/os-release && echo "$VERSION_CODENAME")-docker.sources && \
