@@ -93,6 +93,13 @@ echo "agentaddress  udp:161,[::1]" > /etc/snmp/snmpd.conf.d/agentaddress.conf
 sed -i s/^rocommunity/#rocommunity/ $CFG
 sed -i s/^agentaddress/#agentaddress/ $CFG
 
+## xen
+# disable saving domUs
+if [ -f /etc/default/xendomains.dpkg-new ]; then CFG=/etc/default/xendomains.dpkg-new; \
+   else CFG=CFG=/etc/default/xendomains; fi
+sed -i "s/^XENDOMAINS_SAVE=.*/XENDOMAINS_SAVE=/" $CFG
+sed -i "s/^XENDOMAINS_RESTORE=.*/XENDOMAINS_RESTORE=false/" $CFG
+
 ## phpmyadmin
 if [ -f /etc/phpmyadmin/config.inc.php.dpkg-new ]; then CFG=/etc/phpmyadmin/config.inc.php.dpkg-new; \
    else CFG=/etc/phpmyadmin/config.inc.php; fi
