@@ -3,6 +3,7 @@
 
 [ -x /usr/sbin/phpquery ] || { echo -e "\n\033[1;41m WARNING: PHP not found! \033[0m\n"; [[ $- == *i* ]] || exit 1; }
 # Redirect Bullseye security sources to the archive when needed.
+# Deb822 handling covers only the common single-line URI; wrapped or multiple URIs need manual review.
 if [ "$( . /etc/os-release; echo "$VERSION_CODENAME" )" = bullseye ]; then
   changed=0
   # Only migrate Debian security mirrors, not third-party repositories using the same suite.
@@ -21,6 +22,14 @@ if [ "$( . /etc/os-release; echo "$VERSION_CODENAME" )" = bullseye ]; then
         changed=1
       fi
       rm -f "$tmp"
+    fi
+  done
+  for f in /etc/apt/sources.list.d/*.sources; do
+    [ -f "$f" ] || continue
+    # Deb822 stanzas with wrapped or multiple URIs are intentionally left for manual review.
+    if grep -q '^URIs: http://security\.debian\.org/debian-security$' "$f"; then
+      sed -i -e 's|^URIs: http://security\.debian\.org/debian-security$|URIs: http://archive.debian.org/debian-security|' -e '/^URIs: http:\/\/archive\.debian\.org\/debian-security$/a Check-Valid-Until: no' "$f"
+      changed=1
     fi
   done
   [ "$changed" -eq 0 ] || apt-get update
