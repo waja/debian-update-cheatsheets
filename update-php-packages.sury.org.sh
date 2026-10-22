@@ -9,6 +9,7 @@ for cmd in aptitude lsb_release script debconf-set-selections wget; do
   }
 done
 
+# Check for PHP before continuing; keep the warning non-fatal when commands are pasted into an interactive shell.
 [ -x /usr/sbin/phpquery ] || { echo -e "\n\033[1;41m WARNING: PHP not found! \033[0m\n"; [[ $- == *i* ]] || exit 1; }
 # Redirect Bullseye security sources to the archive when needed.
 # Deb822 handling covers only the common single-line URI; wrapped or multiple URIs need manual review.
