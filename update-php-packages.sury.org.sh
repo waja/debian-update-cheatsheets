@@ -5,7 +5,8 @@
 # Redirect Bullseye security sources to the archive when needed.
 if [ "$( . /etc/os-release; echo "$VERSION_CODENAME" )" = bullseye ]; then
   changed=0
-  source_pattern='^[[:space:]]*deb(-src)?[[:space:]]+(\[[^]]*\][[:space:]]+)?[^[:space:]]+[[:space:]]+bullseye-security([[:space:]]|$)'
+  # Only migrate Debian security mirrors, not third-party repositories using the same suite.
+  source_pattern='^[[:space:]]*deb(-src)?[[:space:]]+(\[[^]]*\][[:space:]]+)?https?://(security\.debian\.org/debian-security|deb\.debian\.org/debian-security)[[:space:]]+bullseye-security([[:space:]]|$)'
   for f in /etc/apt/sources.list /etc/apt/sources.list.d/*.list; do
     [ -f "$f" ] || continue
     if grep -Eq "$source_pattern" "$f"; then
