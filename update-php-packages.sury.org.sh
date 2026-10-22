@@ -3,6 +3,9 @@
 
 [ -x /usr/sbin/phpquery ] || { echo -e "\n\033[1;41m WARNING: PHP not found! \033[0m\n"; [[ $- == *i* ]] || exit 1; }
 # Redirect Bullseye security sources to the archive when needed.
+# Only traditional .list files are migrated automatically. For a Deb822 .sources
+# stanza using a Debian security mirror and bullseye-security, manually set
+# URIs: http://archive.debian.org/debian-security and add Check-Valid-Until: no.
 if [ "$( . /etc/os-release; echo "$VERSION_CODENAME" )" = bullseye ]; then
   changed=0
   # Only migrate Debian security mirrors, not third-party repositories using the same suite.
