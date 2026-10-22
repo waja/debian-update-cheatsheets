@@ -7,8 +7,9 @@ if [[ "${UPGRADE_PHP_LOGGED:-}" == "1" ]]; then
   :
 elif [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
   export UPGRADE_PHP_LOGGED=1
+  printf -v script_command '%q' "$0"
   exec script -t 2>~/upgrade-php-$(lsb_release -sc).time \
-    -a ~/upgrade-php-$(lsb_release -sc).script -c "$0"
+    -a ~/upgrade-php-$(lsb_release -sc).script -c "$script_command"
 else
   script -t 2>~/upgrade-php-$(lsb_release -sc).time \
     -a ~/upgrade-php-$(lsb_release -sc).script
@@ -43,7 +44,7 @@ EOF
 # being preferred over Debian packages; required dependencies may still affect resolution.
 # PHP 7.4 and 8.0 package versions use the "1:" epoch, unlike PHP 8.1 and later.
 mkdir -p /etc/apt/preferences.d && \
-  { phpquery -V | awk '{p=($1=="7.4"||$1=="8.0")?"1:":""; printf "Package: *php*\\nPin: version %s%s.*\\nPin-Priority: 990\\n\\n",p,$1}'; printf 'Package: *\\nPin: origin packages.sury.org\\nPin-Priority: 1\\n'; } > \
+  { phpquery -V | awk '{p=($1=="7.4"||$1=="8.0")?"1:":""; printf "Package: *php*\nPin: version %s%s.*\nPin-Priority: 990\n\n",p,$1}'; printf 'Package: *\nPin: origin packages.sury.org\nPin-Priority: 1\n'; } > \
   /etc/apt/preferences.d/sury-php
 
 # Refresh package indexes and upgrade only installed packages matching the active PHP version.
