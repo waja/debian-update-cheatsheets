@@ -5,12 +5,21 @@
 # Redirect Bullseye security sources to the archive when needed.
 if [ "$( . /etc/os-release; echo "$VERSION_CODENAME" )" = bullseye ]; then
   changed=0
+  source_pattern='^[[:space:]]*deb(-src)?[[:space:]]+(\[[^]]*\][[:space:]]+)?[^[:space:]]+[[:space:]]+bullseye-security([[:space:]]|$)'
   for f in /etc/apt/sources.list /etc/apt/sources.list.d/*.list; do
     [ -f "$f" ] || continue
-    if grep -E '^[[:space:]]*deb(-src)?[[:space:]].*bullseye-security' "$f" |
-       grep -qv 'archive.debian.org/debian-security'; then
-      sed -i -E '/^[[:space:]]*deb(-src)?[[:space:]].*bullseye-security/s#https?://[^[:space:]]+#http://archive.debian.org/debian-security#' "$f"
-      changed=1
+    if grep -Eq "$source_pattern" "$f"; then
+      tmp=$(mktemp)
+      sed -E \
+        -e "/$source_pattern/ s#(^[[:space:]]*deb(-src)?[[:space:]]+(\[[^]]*\][[:space:]]+)?)(https?://[^[:space:]]+)([[:space:]]+bullseye-security)#\\1http://archive.debian.org/debian-security\\5#" \
+        -e "/$source_pattern/ { s#(check-valid-until[[:space:]]*=[[:space:]]*)[^][[:space:]]+#\\1no#; t done; s#^([[:space:]]*deb(-src)?[[:space:]]+\[)([^]]*)(\][[:space:]]+)#\\1\\3 check-valid-until=no\\4#; t done; s#^([[:space:]]*deb(-src)?[[:space:]]+)(https?://[^[:space:]]+)#\\1[check-valid-until=no] \\3#; :done; }" \
+        "$f" > "$tmp"
+      # Write through the path so symlinked source-list files keep their links.
+      if ! cmp -s "$f" "$tmp"; then
+        cat "$tmp" > "$f"
+        changed=1
+      fi
+      rm -f "$tmp"
     fi
   done
   [ "$changed" -eq 0 ] || apt-get update
