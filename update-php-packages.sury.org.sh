@@ -14,6 +14,16 @@ done
 # Deb822 handling covers only the common single-line URI; wrapped or multiple URIs need manual review.
 if [ "$( . /etc/os-release; echo "$VERSION_CODENAME" )" = bullseye ]; then
   changed=0
+  backup_dir=
+  backup_apt_sources() {
+    [ -n "$backup_dir" ] && return 0
+    backup_dir=$(mktemp -d /tmp/apt-sources-backup.XXXXXX) || return 1
+    for source in /etc/apt/sources.list /etc/apt/sources.list.d; do
+      [ -e "$source" ] || [ -L "$source" ] || continue
+      cp -a "$source" "$backup_dir/" || return 1
+    done
+    echo "APT source backup: $backup_dir"
+  }
   # Only migrate Debian security mirrors, not third-party repositories using the same suite.
   source_pattern='^[[:space:]]*deb(-src)?[[:space:]]+(\[[^]]*\][[:space:]]+)?https?://(security\.debian\.org/debian-security|deb\.debian\.org/debian-security)[[:space:]]+bullseye-security([[:space:]]|$)'
   for f in /etc/apt/sources.list /etc/apt/sources.list.d/*.list; do
@@ -26,6 +36,7 @@ if [ "$( . /etc/os-release; echo "$VERSION_CODENAME" )" = bullseye ]; then
         "$f" > "$tmp"
       # Write through the path so symlinked source-list files keep their links.
       if ! cmp -s "$f" "$tmp"; then
+        backup_apt_sources || { echo "ERROR: Could not back up APT sources. Backup directory: ${backup_dir:-not created}" >&2; exit 1; }
         cat "$tmp" > "$f"
         changed=1
       fi
@@ -36,11 +47,22 @@ if [ "$( . /etc/os-release; echo "$VERSION_CODENAME" )" = bullseye ]; then
     [ -f "$f" ] || continue
     # Deb822 stanzas with wrapped or multiple URIs are intentionally left for manual review.
     if grep -q '^URIs: http://security\.debian\.org/debian-security$' "$f"; then
+      backup_apt_sources || { echo "ERROR: Could not back up APT sources. Backup directory: ${backup_dir:-not created}" >&2; exit 1; }
       sed -i -e 's|^URIs: http://security\.debian\.org/debian-security$|URIs: http://archive.debian.org/debian-security|' -e '/^URIs: http:\/\/archive\.debian\.org\/debian-security$/a Check-Valid-Until: no' "$f"
       changed=1
     fi
   done
-  [ "$changed" -eq 0 ] || apt-get update
+  if [ "$changed" -ne 0 ] && ! apt-get update; then
+    echo "ERROR: apt-get update failed. Original APT sources are backed up in $backup_dir." >&2
+    echo "Restore the original files with:" >&2
+    if [ -e "$backup_dir/sources.list" ] || [ -L "$backup_dir/sources.list" ]; then
+      echo "  cp -a \"$backup_dir/sources.list\" /etc/apt/" >&2
+    fi
+    if [ -d "$backup_dir/sources.list.d" ]; then
+      echo "  cp -a \"$backup_dir/sources.list.d/.\" /etc/apt/sources.list.d/" >&2
+    fi
+    exit 1
+  fi
 fi
 
 # Add the PHP repository provided by packages.sury.org.
