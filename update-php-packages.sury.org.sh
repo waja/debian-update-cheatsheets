@@ -1,7 +1,7 @@
 #!/bin/bash
 # Update PHP packages from packages.sury.org on Debian 11, 12 and 13.
 
-[ -x /usr/sbin/phpquery ] || { echo -e "\n\033[1;41m WARNUNG: PHP nicht gefunden! \033[0m\n"; [[ $- == *i* ]] || exit 1; }
+[ -x /usr/sbin/phpquery ] || { echo -e "\n\033[1;41m WARNING: PHP not found! \033[0m\n"; [[ $- == *i* ]] || exit 1; }
 # Redirect Bullseye security sources to the archive when needed.
 if [ "$( . /etc/os-release; echo "$VERSION_CODENAME" )" = bullseye ]; then
   changed=0
