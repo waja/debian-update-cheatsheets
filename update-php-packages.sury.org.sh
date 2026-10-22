@@ -42,12 +42,18 @@ apt install curl &&
 
 # Allow unattended-upgrades to recognize packages from the Sury PHP repository.
 unattended_upgrades=/etc/apt/apt.conf.d/50unattended-upgrades
+sury_origin='^[[:space:]]*"origin=deb\.sury\.org,codename=\$\{distro_codename\}"[[:space:]]*;'
+security_origin='^[[:space:]]*"origin=Debian,codename=\$\{distro_codename\}-security,label=Debian-Security"[[:space:]]*;'
 
-if [ -f "$unattended_upgrades" ] &&
-   ! grep -Eq '^[[:space:]]*"origin=deb\.sury\.org,codename=\$\{distro_codename\}"[[:space:]]*;' "$unattended_upgrades" &&
-   grep -Eq '^[[:space:]]*"origin=Debian,codename=\$\{distro_codename\}-security,label=Debian-Security"[[:space:]]*;' "$unattended_upgrades"; then
+if [ ! -f "$unattended_upgrades" ]; then
+  echo "WARNING: $unattended_upgrades not found; Sury origin was not added to unattended-upgrades." >&2
+elif grep -Eq "$sury_origin" "$unattended_upgrades"; then
+  :
+elif grep -Eq "$security_origin" "$unattended_upgrades"; then
   sed -i '/^[[:space:]]*"origin=Debian,codename=${distro_codename}-security,label=Debian-Security"[[:space:]]*;/a\
         "origin=deb.sury.org,codename=${distro_codename}";' "$unattended_upgrades"
+else
+  echo "WARNING: Debian security origin anchor not found in $unattended_upgrades; Sury origin was not added." >&2
 fi
 
 # Prefer matching-version PHP packages from any repository, while giving packages from
