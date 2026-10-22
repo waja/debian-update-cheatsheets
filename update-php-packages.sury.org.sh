@@ -1,6 +1,7 @@
 #!/bin/bash
 # Update PHP packages from packages.sury.org on Debian 11, 12 and 13.
 
+# Check commands required later before changing APT configuration or package state.
 for cmd in aptitude lsb_release script debconf-set-selections wget; do
   command -v "$cmd" >/dev/null 2>&1 || {
     echo "ERROR: Required command '$cmd' not found." >&2
