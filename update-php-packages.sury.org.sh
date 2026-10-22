@@ -1,6 +1,15 @@
 #!/bin/bash
 # Update PHP packages from packages.sury.org on Debian 11, 12 and 13.
 
+# Warn and stop when PHP is not installed (unless commands are pasted interactively).
+if [ ! -x /usr/sbin/phpquery ]; then
+  printf '\n\033[1;41;97m  WARNING: /usr/sbin/phpquery not found — PHP may not be installed.  \033[0m\n\n'
+  if [[ $- != *i* ]]; then
+    echo "Aborting PHP update."
+    exit 1
+  fi
+fi
+
 # Redirect Bullseye security sources to the archive when needed.
 if [ "$( . /etc/os-release; echo "$VERSION_CODENAME" )" = bullseye ]; then
   changed=0
