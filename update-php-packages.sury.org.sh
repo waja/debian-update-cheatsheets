@@ -11,8 +11,9 @@ aptitude search "~ahold" | grep "^.h"
 dpkg --get-selections | grep hold
 dpkg --get-selections "*" > ~/curr-pkgs.txt
 
-# Check whether a full upgrade would require additional packages; show disk space if it would.
-apt-get -o APT::Get::Trivial-Only=true dist-upgrade || df -h
+# Estimate the upgrade's disk-space requirements and show currently available space.
+apt -o APT::Get::Trivial-Only=true dist-upgrade
+df -h
 
 # Remove packages that have been deleted but still have configuration files registered.
 apt purge $(dpkg -l | awk '/^rc/ { print $2 }')
