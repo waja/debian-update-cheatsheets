@@ -26,7 +26,27 @@ if [ "$( . /etc/os-release; echo "$VERSION_CODENAME" )" = bullseye ]; then
 fi
 
 # Add the PHP repository provided by packages.sury.org.
-apt install curl; curl https://packages.sury.org/php/README.txt | bash
+if ! apt install curl; then
+  echo "Failed to install curl; stopping before configuring the PHP repository." >&2
+  exit 1
+fi
+
+sury_readme=$(mktemp) || {
+  echo "Failed to create a temporary file for the Sury repository setup." >&2
+  exit 1
+}
+if ! curl --fail --location --show-error --silent \
+  https://packages.sury.org/php/README.txt -o "$sury_readme"; then
+  rm -f "$sury_readme"
+  echo "Failed to download the Sury repository setup instructions." >&2
+  exit 1
+fi
+if ! bash "$sury_readme"; then
+  rm -f "$sury_readme"
+  echo "Failed to configure the Sury PHP repository." >&2
+  exit 1
+fi
+rm -f "$sury_readme"
 
 # Allow unattended-upgrades to recognize packages from the Sury PHP repository.
 unattended_upgrades=/etc/apt/apt.conf.d/50unattended-upgrades
