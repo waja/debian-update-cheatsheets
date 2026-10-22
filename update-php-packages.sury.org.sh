@@ -40,5 +40,7 @@ apt upgrade --without-new-pkgs
 
 # remove old squeeze packages left around (keep eyes open!)
 apt autoremove && \
-wget https://ftp.de.debian.org/debian/pool/main/d/deborphan/deborphan_1.7.35_amd64.deb -O /tmp/deborphan_1.7.35_amd64.deb && apt install /tmp/deborphan_1.7.35_amd64.deb && apt purge $(deborphan | grep -v xen | grep -v -E 'libpam-cracklib|libapache2-mpm-itk')
+arch="$(dpkg --print-architecture)"
+deborphan_deb="/tmp/deborphan_1.7.35_${arch}.deb"
+wget "https://ftp.de.debian.org/debian/pool/main/d/deborphan/deborphan_1.7.35_${arch}.deb" -O "${deborphan_deb}" && apt install "${deborphan_deb}" && apt purge $(deborphan | grep -v xen | grep -v -E 'libpam-cracklib|libapache2-mpm-itk')
 apt purge $(dpkg -l | awk '/^rc/ { print $2 }')
