@@ -1,13 +1,14 @@
-## Debian update sheatsheets
+## Debian update cheatsheets
 
-Please **DON'T** run those scripts unattended or even start them on shell. They are intended as copy & paste for usual (or even unusual) situations you might need to handle when upgradig your Debian installation. Please consult the [Debian release notes](https://www.debian.org/releases/stable/releasenotes) **BEFORE** you upgrade your system.  
- 
-If you are not experienced updating Debian (based) systems, please keep away from this cheatsheet!  
+Please **DON'T** run those scripts unattended or even start them on shell. They are intended as copy & paste for usual (or even unusual) situations you might need to handle when upgrading your Debian installation. Please consult the [Debian release notes](https://www.debian.org/releases/stable/releasenotes) **BEFORE** you upgrade your system.
 
-For each update exists a dedicated branch, the main branch reflects the update to the latest release:  
+If you are not experienced updating Debian (based) systems, please keep away from this cheatsheet!
+
+## Distribution upgrades
+
+The following branches contain instructions for upgrading Debian from one release to another. The `main` branch reflects the upgrade to the latest release:
 
 * [main](https://github.com/waja/debian-update-cheatsheets/tree/main)
-* [update-php-packages.sury.org](https://github.com/waja/debian-update-cheatsheets/tree/update-php-packages.sury.org) — Updates installed PHP packages using packages.sury.org on Debian 11, 12 and 13. The procedure adjusts APT pinning to prefer the active PHP version and is intended for careful, interactive use.
 * [bookworm2trixie](https://github.com/waja/debian-update-cheatsheets/tree/bookworm2trixie)
 * [bullseye2bookworm](https://github.com/waja/debian-update-cheatsheets/tree/bullseye2bookworm)
 * [buster2bullseye](https://github.com/waja/debian-update-cheatsheets/tree/buster2bullseye)
@@ -16,3 +17,9 @@ For each update exists a dedicated branch, the main branch reflects the update t
 * [wheezy2jessie](https://github.com/waja/debian-update-cheatsheets/tree/wheezy2jessie)
 * [squeeze2wheezy](https://github.com/waja/debian-update-cheatsheets/tree/squeeze2wheezy)
 * [lenny2squeeze](https://github.com/waja/debian-update-cheatsheets/tree/lenny2squeeze)
+
+## PHP package updates
+
+The following branch contains instructions for updating installed PHP packages from [packages.sury.org](https://packages.sury.org/php/) on Debian 11, 12 and 13. It is intended for carefully updating PHP packages while keeping the active PHP version in focus, rather than upgrading the Debian distribution itself.
+
+* [update-php-packages.sury.org](https://github.com/waja/debian-update-cheatsheets/tree/update-php-packages.sury.org)
