@@ -1,6 +1,21 @@
 #!/bin/bash
 # Update PHP packages from packages.sury.org on Debian 11, 12 and 13.
 
+# Record the complete script when executed directly.
+# When pasted into an interactive shell, start an interactive recording session.
+if [[ "${UPGRADE_PHP_LOGGED:-}" == "1" ]]; then
+  :
+elif [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  export UPGRADE_PHP_LOGGED=1
+  script_path="$(readlink -f -- "$0")"
+  printf -v script_command '%q' "$script_path"
+  exec script -t 2>~/upgrade-php-$(lsb_release -sc).time \
+    -a ~/upgrade-php-$(lsb_release -sc).script -c "$script_command"
+else
+  script -t 2>~/upgrade-php-$(lsb_release -sc).time \
+    -a ~/upgrade-php-$(lsb_release -sc).script
+fi
+
 # Add the PHP repository provided by packages.sury.org.
 apt install curl; curl https://packages.sury.org/php/README.txt | bash
 
@@ -16,9 +31,6 @@ apt-get -o APT::Get::Trivial-Only=true dist-upgrade || df -h
 
 # Remove packages that have been deleted but still have configuration files registered.
 apt purge $(dpkg -l | awk '/^rc/ { print $2 }')
-
-# Record the interactive upgrade session, including timing information, for later review.
-script -t 2>~/upgrade-php-$(lsb_release -sc).time -a ~/upgrade-php-$(lsb_release -sc).script
 
 # Preseed libc6 configuration answers so its upgrade does not prompt for these choices.
 cat > /tmp/upgrade-php-$(lsb_release -sc).preseed <<EOF
