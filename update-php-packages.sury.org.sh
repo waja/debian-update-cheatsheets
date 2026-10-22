@@ -28,6 +28,16 @@ fi
 # Add the PHP repository provided by packages.sury.org.
 apt install curl; curl https://packages.sury.org/php/README.txt | bash
 
+# Allow unattended-upgrades to recognize packages from the Sury PHP repository.
+unattended_upgrades=/etc/apt/apt.conf.d/50unattended-upgrades
+sury_origin='        "origin=deb.sury.org,codename=${distro_codename}";'
+security_origin='        "origin=Debian,codename=${distro_codename}-security,label=Debian-Security";'
+if [ -f "$unattended_upgrades" ] && ! grep -Fqx "$sury_origin" "$unattended_upgrades" &&
+   grep -Fqx "$security_origin" "$unattended_upgrades"; then
+  sed -i '/"origin=Debian,codename=${distro_codename}-security,label=Debian-Security";/a\
+        "origin=deb.sury.org,codename=${distro_codename}";' "$unattended_upgrades"
+fi
+
 # Prefer matching-version PHP packages from any repository, while giving packages from
 # packages.sury.org a low priority by default. This keeps unrelated Sury packages from
 # being preferred over Debian packages; required dependencies may still affect resolution.
