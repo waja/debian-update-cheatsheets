@@ -1,6 +1,20 @@
 #!/bin/bash
 # Update PHP packages from packages.sury.org on Debian 11, 12 and 13.
 
+# Redirect Bullseye security sources to the archive when needed.
+if [ "$( . /etc/os-release; echo "$VERSION_CODENAME" )" = bullseye ]; then
+  changed=0
+  for f in /etc/apt/sources.list /etc/apt/sources.list.d/*.list; do
+    [ -f "$f" ] || continue
+    if grep -E '^[[:space:]]*deb(-src)?[[:space:]].*bullseye-security' "$f" |
+       grep -qv 'archive.debian.org/debian-security'; then
+      sed -i -E '/^[[:space:]]*deb(-src)?[[:space:]].*bullseye-security/s#https?://[^[:space:]]+#http://archive.debian.org/debian-security#' "$f"
+      changed=1
+    fi
+  done
+  [ "$changed" -eq 0 ] || apt-get update
+fi
+
 # Add the PHP repository provided by packages.sury.org.
 apt install curl; curl https://packages.sury.org/php/README.txt | bash
 
