@@ -121,7 +121,13 @@ EOF
 /usr/bin/debconf-set-selections /tmp/upgrade-php-$(lsb_release -sc).preseed && rm /tmp/upgrade-php-$(lsb_release -sc).preseed
 
 # Refresh package indexes and upgrade only installed packages matching the active PHP version.
-apt update; apt install -y --only-upgrade "*php$(phpquery -V | head -1)*" "*libapache2-mod-php$(phpquery -V | head -1)*"
+# Avoid broad package patterns if phpquery cannot determine the version.
+php_version=$(phpquery -V 2>/dev/null | head -1)
+if [ -n "$php_version" ]; then
+  apt update; apt install -y --only-upgrade "*php${php_version}*" "*libapache2-mod-php${php_version}*"
+else
+  echo "WARNING: Could not determine PHP version; skipping PHP package upgrade." >&2
+fi
 
 # Upgrade installed packages without allowing new packages to be installed.
 apt upgrade --without-new-pkgs
