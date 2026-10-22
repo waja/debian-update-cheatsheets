@@ -9,7 +9,7 @@ apt install curl; curl https://packages.sury.org/php/README.txt | bash
 # being preferred over Debian packages; required dependencies may still affect resolution.
 # PHP 7.4 and 8.0 package versions use the "1:" epoch, unlike PHP 8.1 and later.
 mkdir -p /etc/apt/preferences.d && \
-  { phpquery -V | awk '{p=($1=="7.4"||$1=="8.0")?"1:":""; printf "Package: *php*\nPin: version %s%s.*\nPin-Priority: 990\n\n",p,$1}'; printf 'Package: *\nPin: origin packages.sury.org\nPin-Priority: 1\n'; } > \
+  { phpquery -V | awk '{p=($1=="7.4"||$1=="8.0")?"1:":""; printf "Package: *php*\nPin: version %s%s.*\nPin-Priority: 990\n\n",p,$1}'; printf 'Package: libpcre2*\nPin: origin packages.sury.org\nPin-Priority: 990\n\n'; printf 'Package: *\nPin: origin packages.sury.org\nPin-Priority: 1\n'; } > \
   /etc/apt/preferences.d/sury-php
 
 # Check package-manager state before upgrading: pending package issues, held packages,
