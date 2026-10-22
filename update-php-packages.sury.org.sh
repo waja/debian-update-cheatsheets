@@ -7,7 +7,8 @@ if [[ "${UPGRADE_PHP_LOGGED:-}" == "1" ]]; then
   :
 elif [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
   export UPGRADE_PHP_LOGGED=1
-  printf -v script_command '%q' "$0"
+  script_path="$(readlink -f -- "$0")"
+  printf -v script_command '%q' "$script_path"
   exec script -t 2>~/upgrade-php-$(lsb_release -sc).time \
     -a ~/upgrade-php-$(lsb_release -sc).script -c "$script_command"
 else
