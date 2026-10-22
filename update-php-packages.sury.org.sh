@@ -5,14 +5,15 @@
 # Redirect Bullseye security sources to the archive when needed.
 if [ "$( . /etc/os-release; echo "$VERSION_CODENAME" )" = bullseye ]; then
   changed=0
-  source_pattern='^[[:space:]]*deb(-src)?[[:space:]]+(\[[^]]*\][[:space:]]+)?[^[:space:]]+[[:space:]]+bullseye-security([[:space:]]|$)'
+  # Only migrate Debian security mirrors, not third-party repositories using the same suite.
+  source_pattern='^[[:space:]]*deb(-src)?[[:space:]]+(\[[^]]*\][[:space:]]+)?https?://(security\.debian\.org/debian-security|deb\.debian\.org/debian-security)[[:space:]]+bullseye-security([[:space:]]|$)'
   for f in /etc/apt/sources.list /etc/apt/sources.list.d/*.list; do
     [ -f "$f" ] || continue
     if grep -Eq "$source_pattern" "$f"; then
       tmp=$(mktemp)
       sed -E \
-        -e "/$source_pattern/ s#(^[[:space:]]*deb(-src)?[[:space:]]+(\[[^]]*\][[:space:]]+)?)(https?://[^[:space:]]+)([[:space:]]+bullseye-security)#\\1http://archive.debian.org/debian-security\\5#" \
-        -e "/$source_pattern/ { s#(check-valid-until[[:space:]]*=[[:space:]]*)[^][[:space:]]+#\\1no#; t done; s#^([[:space:]]*deb(-src)?[[:space:]]+\[)([^]]*)(\][[:space:]]+)#\\1\\3 check-valid-until=no\\4#; t done; s#^([[:space:]]*deb(-src)?[[:space:]]+)(https?://[^[:space:]]+)#\\1[check-valid-until=no] \\3#; :done; }" \
+        -e "\|$source_pattern| s#(^[[:space:]]*deb(-src)?[[:space:]]+(\[[^]]*\][[:space:]]+)?)(https?://(security\.debian\.org/debian-security|deb\.debian\.org/debian-security))([[:space:]]+bullseye-security)#\\1http://archive.debian.org/debian-security\\6#" \
+        -e "\|$source_pattern| { s#(check-valid-until[[:space:]]*=[[:space:]]*)[^][[:space:]]+#\\1no#; t done; s#^([[:space:]]*deb(-src)?[[:space:]]+\[)([^]]*)(\][[:space:]]+)#\\1\\3 check-valid-until=no\\4#; t done; s#^([[:space:]]*deb(-src)?[[:space:]]+)(https?://[^[:space:]]+)#\\1[check-valid-until=no] \\3#; :done; }" \
         "$f" > "$tmp"
       # Write through the path so symlinked source-list files keep their links.
       if ! cmp -s "$f" "$tmp"; then
