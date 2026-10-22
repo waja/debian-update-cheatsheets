@@ -66,9 +66,12 @@ if [ "$( . /etc/os-release; echo "$VERSION_CODENAME" )" = bullseye ]; then
 fi
 
 # Add the PHP repository provided by packages.sury.org.
-apt install curl &&
-  curl --fail --location --show-error https://packages.sury.org/php/README.txt -o /tmp/sury-php-setup.sh &&
-  bash /tmp/sury-php-setup.sh
+if ! apt install curl ||
+   ! curl --fail --location --show-error https://packages.sury.org/php/README.txt -o /tmp/sury-php-setup.sh ||
+   ! bash /tmp/sury-php-setup.sh; then
+  echo "ERROR: Failed to set up the Sury PHP repository. Aborting." >&2
+  exit 1
+fi
 
 # Allow unattended-upgrades to recognize packages from the Sury PHP repository.
 unattended_upgrades=/etc/apt/apt.conf.d/50unattended-upgrades
