@@ -33,7 +33,7 @@ mkdir -p /etc/apt/preferences.d && \
   /etc/apt/preferences.d/sury-php
 
 # minimal upgrade
-apt update; apt install -y --only-upgrade *php$(phpquery -V)*
+apt update; apt install -y --only-upgrade "*php$(phpquery -V)*" "*libapache2-mod-php$(phpquery -V)*"
 
 # minimal system upgrade
 apt upgrade --without-new-pkgs
