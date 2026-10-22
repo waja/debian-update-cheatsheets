@@ -1,6 +1,14 @@
 #!/bin/bash
 # Update PHP packages from packages.sury.org on Debian 11, 12 and 13.
 
+# Check commands required later before changing APT configuration or package state.
+for cmd in aptitude lsb_release script debconf-set-selections wget; do
+  command -v "$cmd" >/dev/null 2>&1 || {
+    echo "ERROR: Required command '$cmd' not found." >&2
+    exit 1
+  }
+done
+
 [ -x /usr/sbin/phpquery ] || { echo -e "\n\033[1;41m WARNING: PHP not found! \033[0m\n"; [[ $- == *i* ]] || exit 1; }
 # Redirect Bullseye security sources to the archive when needed.
 # Deb822 handling covers only the common single-line URI; wrapped or multiple URIs need manual review.
