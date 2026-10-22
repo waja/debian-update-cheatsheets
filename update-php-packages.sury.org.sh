@@ -1,6 +1,19 @@
 #!/bin/bash
 # Update PHP packages from packages.sury.org on Debian 11, 12 and 13.
 
+# Record the complete script when executed directly.
+# When pasted into an interactive shell, start an interactive recording session.
+if [[ "${UPGRADE_PHP_LOGGED:-}" == "1" ]]; then
+  :
+elif [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  export UPGRADE_PHP_LOGGED=1
+  exec script -t 2>~/upgrade-php-$(lsb_release -sc).time \
+    -a ~/upgrade-php-$(lsb_release -sc).script -c "$0"
+else
+  script -t 2>~/upgrade-php-$(lsb_release -sc).time \
+    -a ~/upgrade-php-$(lsb_release -sc).script
+fi
+
 # Add the PHP repository provided by packages.sury.org.
 apt install curl; curl https://packages.sury.org/php/README.txt | bash
 
@@ -17,9 +30,6 @@ apt-get -o APT::Get::Trivial-Only=true dist-upgrade || df -h
 # Remove packages that have been deleted but still have configuration files registered.
 apt purge $(dpkg -l | awk '/^rc/ { print $2 }')
 
-# Record the interactive upgrade session, including timing information, for later review.
-script -t 2>~/upgrade-php-$(lsb_release -sc).time -a ~/upgrade-php-$(lsb_release -sc).script
-
 # Preseed libc6 configuration answers so its upgrade does not prompt for these choices.
 cat > /tmp/upgrade-php-$(lsb_release -sc).preseed <<EOF
 libc6 glibc/upgrade boolean true
@@ -33,7 +43,7 @@ EOF
 # being preferred over Debian packages; required dependencies may still affect resolution.
 # PHP 7.4 and 8.0 package versions use the "1:" epoch, unlike PHP 8.1 and later.
 mkdir -p /etc/apt/preferences.d && \
-  { phpquery -V | awk '{p=($1=="7.4"||$1=="8.0")?"1:":""; printf "Package: *php*\nPin: version %s%s.*\nPin-Priority: 990\n\n",p,$1}'; printf 'Package: *\nPin: origin packages.sury.org\nPin-Priority: 1\n'; } > \
+  { phpquery -V | awk '{p=($1=="7.4"||$1=="8.0")?"1:":""; printf "Package: *php*\\nPin: version %s%s.*\\nPin-Priority: 990\\n\\n",p,$1}'; printf 'Package: *\\nPin: origin packages.sury.org\\nPin-Priority: 1\\n'; } > \
   /etc/apt/preferences.d/sury-php
 
 # Refresh package indexes and upgrade only installed packages matching the active PHP version.
