@@ -4,6 +4,14 @@
 # Add the PHP repository provided by packages.sury.org.
 apt install curl; curl https://packages.sury.org/php/README.txt | bash
 
+# Prefer matching-version PHP packages from any repository, while giving packages from
+# packages.sury.org a low priority by default. This keeps unrelated Sury packages from
+# being preferred over Debian packages; required dependencies may still affect resolution.
+# PHP 7.4 and 8.0 package versions use the "1:" epoch, unlike PHP 8.1 and later.
+mkdir -p /etc/apt/preferences.d && \
+  { phpquery -V | awk '{p=($1=="7.4"||$1=="8.0")?"1:":""; printf "Package: *php*\nPin: version %s%s.*\nPin-Priority: 990\n\n",p,$1}'; printf 'Package: *\nPin: origin packages.sury.org\nPin-Priority: 1\n'; } > \
+  /etc/apt/preferences.d/sury-php
+
 # Check package-manager state before upgrading: pending package issues, held packages,
 # and a snapshot of the currently selected packages.
 dpkg --audit
@@ -28,14 +36,6 @@ libc6 glibc/restart-services string
 libc6 libraries/restart-without-asking boolean true
 EOF
 /usr/bin/debconf-set-selections /tmp/upgrade-php-$(lsb_release -sc).preseed && rm /tmp/upgrade-php-$(lsb_release -sc).preseed
-
-# Prefer matching-version PHP packages from any repository, while giving packages from
-# packages.sury.org a low priority by default. This keeps unrelated Sury packages from
-# being preferred over Debian packages; required dependencies may still affect resolution.
-# PHP 7.4 and 8.0 package versions use the "1:" epoch, unlike PHP 8.1 and later.
-mkdir -p /etc/apt/preferences.d && \
-  { phpquery -V | awk '{p=($1=="7.4"||$1=="8.0")?"1:":""; printf "Package: *php*\nPin: version %s%s.*\nPin-Priority: 990\n\n",p,$1}'; printf 'Package: *\nPin: origin packages.sury.org\nPin-Priority: 1\n'; } > \
-  /etc/apt/preferences.d/sury-php
 
 # Refresh package indexes and upgrade only installed packages matching the active PHP version.
 apt update; apt install -y --only-upgrade "*php$(phpquery -V)*" "*libapache2-mod-php$(phpquery -V)*"
