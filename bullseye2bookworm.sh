@@ -133,6 +133,9 @@ if [ "$(dpkg -l | grep "postgresql-13" | awk {'print $2'})" = "postgresql-13" ];
 fi
 pg_dropcluster 13 main
 
+# Downgrade ca-certificates to bookworm version
+apt-get install --allow-downgrades ca-certificates/bookworm
+
 # transition docker-ce to bookworm package
 DOCKER_VER="$(apt-cache policy docker-ce | grep debian-bookworm | head -1 | awk '{print $1}')" && [ -n "${DOCKER_VER}" ] && apt install docker-ce=${DOCKER_VER} docker-ce-cli=${DOCKER_VER}
 
